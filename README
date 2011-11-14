@@ -1,0 +1,12 @@
+nroonga
+
+How to build:
+
+% node-waf configure
+% node-waf build
+
+run:
+
+% node examples/test.js
+
+% coffee examples/prompt.coffee
