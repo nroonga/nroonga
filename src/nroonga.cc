@@ -1,9 +1,9 @@
 #include <v8.h>
 #include <node.h>
 #include <groonga/groonga.h>
-#include "groonga.h"
+#include "nroonga.h"
 
-namespace node_groonga {
+namespace nroonga {
 
 using namespace v8;
 
@@ -170,13 +170,13 @@ Handle<Value> Database::CommandSync(const Arguments& args) {
   return scope.Close(String::New(result, result_length));
 }
 
-void InitGroonga(Handle<Object> target) {
+void InitNroonga(Handle<Object> target) {
   HandleScope scope;
   grn_init();
 
   Database::Initialize(target);
 }
 
-} // namespace node_groonga
+} // namespace nroonga
 
-NODE_MODULE(groonga, node_groonga::InitGroonga);
+NODE_MODULE(nroonga, nroonga::InitNroonga);

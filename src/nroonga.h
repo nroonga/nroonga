@@ -10,7 +10,7 @@
 using namespace v8;
 using namespace node;
 
-namespace node_groonga {
+namespace nroonga {
 
 class Database : ObjectWrap {
   grn_ctx context;
@@ -47,7 +47,7 @@ class Database : ObjectWrap {
     static void CommandAfter(uv_work_t* req);
 };
 
-void InitGroonga(v8::Handle<v8::Object> target);
+void InitNroonga(v8::Handle<v8::Object> target);
 
-} // namespace node_groonga
+} // namespace nroonga
 #endif

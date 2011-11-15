@@ -1,6 +1,6 @@
-Groonga = require('../build/Release/groonga.node')
+Nroonga = require('../build/Release/nroonga.node')
 
-db = new Groonga.Database()
+db = new Nroonga.Database()
 
 db.command('status', function(error, data) {
   console.log(data);

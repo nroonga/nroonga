@@ -1,10 +1,10 @@
-Groonga = require('../build/Release/groonga.node')
+Nroonga = require('../build/Release/nroonga.node')
 readline = require('readline')
 
 db = if process.argv.length > 2
-  new Groonga.Database(process.argv[2])
+  new Nroonga.Database(process.argv[2])
 else
-  new Groonga.Database()
+  new Nroonga.Database()
 
 rl = readline.createInterface(process.stdin, process.stdout)
 prefix = '> '
