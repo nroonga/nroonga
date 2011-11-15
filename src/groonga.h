@@ -22,7 +22,6 @@ class Database : ObjectWrap {
       uv_work_t request;
       Persistent<Function> callback;
       int error;
-      std::string message;
       char *result;
       unsigned int result_length;
 
