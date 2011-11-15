@@ -82,13 +82,21 @@ void Database::CommandAfter(uv_work_t* req) {
   if (baton->error) {
       Local<Value> error = Exception::Error(String::New(baton->context.errbuf));
       Local<Value> argv[] = { error };
+      TryCatch try_catch;
       baton->callback->Call(v8::Context::GetCurrent()->Global(), 1, argv);
+      if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+      }
   } else {
       Local<Value> argv[] = {
         Local<Value>::New(Undefined()),
         Local<Value>::New(String::New(baton->result, baton->result_length))
       };
+      TryCatch try_catch;
       baton->callback->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+      if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+      }
   }
   grn_ctx_fin(&baton->context);
   delete baton->command;
