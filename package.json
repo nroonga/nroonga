@@ -5,6 +5,9 @@
     "coffee-script":"",
     "expresso":""
   },
+  "dependencies": {
+    "express":""
+  },
   "scripts": {
     "test": "expresso"
   }
