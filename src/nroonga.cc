@@ -57,7 +57,7 @@ void Database::CommandWork(uv_work_t* req) {
 
   grn_ctx_init(ctx, 0);
   grn_ctx_use(ctx, baton->database);
-  rc = grn_ctx_send(ctx, baton->command, baton->command_length, 0);
+  rc = grn_ctx_send(ctx, baton->command.c_str(), baton->command.size(), 0);
   if (rc < 0) {
     baton->error = 1;
     return;
@@ -99,7 +99,6 @@ void Database::CommandAfter(uv_work_t* req) {
       }
   }
   grn_ctx_fin(&baton->context);
-  delete baton->command;
   baton->callback.Dispose();
   delete baton;
 }
@@ -129,9 +128,7 @@ Handle<Value> Database::CommandString(const Arguments& args) {
   String::Utf8Value command(args[0]->ToString());
   baton->database = db->database;
 
-  baton->command = new char[command.length()];
-  memcpy(baton->command, *command, command.length());
-  baton->command_length = command.length();
+  baton->command = std::string(*command, command.length());
   uv_queue_work(uv_default_loop(),
       &baton->request,
       CommandWork,

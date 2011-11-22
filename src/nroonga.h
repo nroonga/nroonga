@@ -25,8 +25,7 @@ class Database : ObjectWrap {
       char *result;
       unsigned int result_length;
 
-      char *command;
-      int command_length;
+      std::string command;
       grn_ctx context;
       grn_obj *database;
     };
