@@ -1,4 +1,4 @@
-Nroonga = require('../build/Release/nroonga.node')
+Nroonga = require('../lib/nroonga')
 readline = require('readline')
 
 db = if process.argv.length > 2
@@ -11,9 +11,8 @@ prefix = '> '
 rl.on 'line', (line) ->
   try
     data = db.commandSync line.trim()
-    if data.length > 0
-      result = JSON.parse(data)
-      console.log(result)
+    if data?
+      console.log(data)
   catch error
     console.log(error)
 

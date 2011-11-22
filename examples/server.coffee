@@ -1,5 +1,5 @@
 express = require('express')
-Nroonga = require('../build/Release/nroonga.node')
+Nroonga = require('../lib/nroonga')
 
 db = if process.argv.length > 2
   new Nroonga.Database(process.argv[2])
@@ -10,13 +10,7 @@ port = 3000
 
 app = express.createServer()
 app.get '/d/:command', (req, res) ->
-  args = [req.params.command]
-  for key, value of req.query
-    args.push("--#{key}")
-    args.push(value)
-
-  command = args.join(' ')
-  db.command command, (error, data) ->
+  db.command req.params.command, req.query, (error, data) ->
     if error?
       res.send(error.toString() + "\n", 400)
     else

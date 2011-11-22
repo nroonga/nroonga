@@ -33,8 +33,8 @@ class Database : ObjectWrap {
 
   protected:
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Command(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CommandSync(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CommandString(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CommandSyncString(const v8::Arguments& args);
     Database() : ObjectWrap() {
     }
     void CleanupDatabase() {

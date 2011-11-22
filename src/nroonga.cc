@@ -18,8 +18,8 @@ void Database::Initialize(Handle<Object> target) {
   t->InstanceTemplate()->SetInternalFieldCount(1);
   t->SetClassName(String::NewSymbol("Database"));
 
-  NODE_SET_PROTOTYPE_METHOD(t, "command", Database::Command);
-  NODE_SET_PROTOTYPE_METHOD(t, "commandSync", Database::CommandSync);
+  NODE_SET_PROTOTYPE_METHOD(t, "commandString", Database::CommandString);
+  NODE_SET_PROTOTYPE_METHOD(t, "commandSyncString", Database::CommandSyncString);
 
   target->Set(String::NewSymbol("Database"), t->GetFunction());
 }
@@ -104,7 +104,7 @@ void Database::CommandAfter(uv_work_t* req) {
   delete baton;
 }
 
-Handle<Value> Database::Command(const Arguments& args) {
+Handle<Value> Database::CommandString(const Arguments& args) {
   HandleScope scope;
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
@@ -140,7 +140,7 @@ Handle<Value> Database::Command(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Database::CommandSync(const Arguments& args) {
+Handle<Value> Database::CommandSyncString(const Arguments& args) {
   HandleScope scope;
 
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
@@ -179,4 +179,4 @@ void InitNroonga(Handle<Object> target) {
 
 } // namespace nroonga
 
-NODE_MODULE(nroonga, nroonga::InitNroonga);
+NODE_MODULE(nroonga_bindings, nroonga::InitNroonga);
