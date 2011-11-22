@@ -110,14 +110,12 @@ Handle<Value> Database::CommandString(const Arguments& args) {
     return ThrowException(Exception::TypeError(String::New("Bad parameter")));
   }
 
-  bool callback_given = false;
   Local<Function> callback;
   if (args.Length() >= 2) {
     if (!args[1]->IsFunction()) {
       return ThrowException(Exception::TypeError(String::New("Second argument must be a callback function")));
     } else {
       callback = Local<Function>::Cast(args[1]);
-      callback_given = true;
     }
   }
 
