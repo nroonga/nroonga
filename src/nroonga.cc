@@ -41,6 +41,9 @@ Handle<Value> Database::New(const Arguments& args) {
   } else if(args[0]->IsString()) {
     String::Utf8Value path(args[0]->ToString());
     GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
+    if (ctx->rc != GRN_SUCCESS) {
+      return ThrowException(Exception::Error(String::New(ctx->errbuf)));
+    }
     if (!db->database) {
       return ThrowException(Exception::Error(String::New("DB open failed")));
     }
