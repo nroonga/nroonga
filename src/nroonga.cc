@@ -41,6 +41,9 @@ Handle<Value> Database::New(const Arguments& args) {
   } else if(args[0]->IsString()) {
     String::Utf8Value path(args[0]->ToString());
     GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
+    if (!db->database) {
+      return ThrowException(Exception::Error(String::New("DB open failed")));
+    }
   } else {
     return ThrowException(Exception::TypeError(String::New("Bad parameter")));
   }
