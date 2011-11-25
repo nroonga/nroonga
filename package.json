@@ -2,11 +2,11 @@
   "name": "nroonga",
   "version": "0.0.0",
   "devDependencies": {
+    "express":"",
     "coffee-script":"",
     "expresso":""
   },
   "dependencies": {
-    "express":""
   },
   "scripts": {
     "test": "expresso",
