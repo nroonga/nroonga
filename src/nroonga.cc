@@ -44,9 +44,6 @@ Handle<Value> Database::New(const Arguments& args) {
     if (ctx->rc != GRN_SUCCESS) {
       return ThrowException(Exception::Error(String::New(ctx->errbuf)));
     }
-    if (!db->database) {
-      return ThrowException(Exception::Error(String::New("DB open failed")));
-    }
   } else {
     return ThrowException(Exception::TypeError(String::New("Bad parameter")));
   }
