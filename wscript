@@ -22,8 +22,6 @@ def build(bld):
   obj.source = "src/nroonga.cc"
   obj.uselib = ["GROONGA"]
 
-  os.system('coffee -o lib/ -c src/')
-
 def shutdown():
   if exists(built):
     copy(built, dest)

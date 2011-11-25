@@ -9,7 +9,8 @@
     "express":""
   },
   "scripts": {
-    "test": "expresso"
+    "test": "expresso",
+    "watch": "coffee -c -w -o lib src"
   },
   "main": "./lib/nroonga"
 }

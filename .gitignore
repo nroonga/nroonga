@@ -2,4 +2,3 @@ build
 .lock-wscript
 node_modules
 lib/nroonga_bindings.node
-lib/nroonga.js
