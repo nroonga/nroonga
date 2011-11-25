@@ -1,10 +1,10 @@
-Nroonga = require('../lib/nroonga')
+nroonga = require('../lib/nroonga')
 readline = require('readline')
 
 db = if process.argv.length > 2
-  new Nroonga.Database(process.argv[2])
+  new nroonga.Database(process.argv[2])
 else
-  new Nroonga.Database()
+  new nroonga.Database()
 
 rl = readline.createInterface(process.stdin, process.stdout)
 prefix = '> '

@@ -1,10 +1,10 @@
 express = require('express')
-Nroonga = require('../lib/nroonga')
+nroonga = require('../lib/nroonga')
 
 db = if process.argv.length > 2
-  new Nroonga.Database(process.argv[2])
+  new nroonga.Database(process.argv[2])
 else
-  new Nroonga.Database()
+  new nroonga.Database()
 
 port = 3000
 
