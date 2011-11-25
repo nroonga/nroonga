@@ -13,7 +13,7 @@ def set_options(opt):
 def configure(conf):
   conf.check_tool("compiler_cxx")
   conf.check_tool("node_addon")
-  conf.check(lib='groonga', libpath=['/usr/lib', '/usr/local/lib'])
+  conf.check_cfg(package='groonga')
 
 def build(bld):
   obj = bld.new_task_gen("cxx", "shlib", "node_addon")
