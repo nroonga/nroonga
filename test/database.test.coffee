@@ -15,7 +15,7 @@ module.exports =
     beforeExit ->
       assert.isDefined status.version
 
-  'open database which name is not string': (beforeExit, assert) ->
+  'open database whose name is not string': (beforeExit, assert) ->
     errorThrown = null
     try
       new nroonga.Database(1)
