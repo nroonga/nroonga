@@ -2,6 +2,9 @@ import os
 from os.path import exists
 from shutil import copy2 as copy
 
+import Options
+import Utils
+
 TARGET = 'nroonga_bindings'
 TARGET_FILE = '%s.node' % TARGET
 built = 'build/Release/%s' % TARGET_FILE
@@ -23,5 +26,11 @@ def build(bld):
   obj.uselib = ["GROONGA"]
 
 def shutdown():
-  if exists(built):
-    copy(built, dest)
+  if Options.commands['clean']:
+    if exists(TARGET_FILE):
+      os.unlink(TARGET_FILE)
+    if exists(dest):
+      os.unlink(dest)
+  else:
+    if exists(built):
+      copy(built, dest)
