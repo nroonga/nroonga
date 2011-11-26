@@ -14,3 +14,13 @@ module.exports =
 
     beforeExit ->
       assert.isDefined status.version
+
+  'open database which name is not string': (beforeExit, assert) ->
+    errorThrown = null
+    try
+      new nroonga.Database(1)
+    catch error
+      errorThrown = error
+
+    beforeExit ->
+      assert.ok(errorThrown, 'No error thrown')
