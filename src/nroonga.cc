@@ -40,7 +40,11 @@ Handle<Value> Database::New(const Arguments& args) {
     db->database = grn_db_create(ctx, NULL, NULL);
   } else if(args[0]->IsString()) {
     String::Utf8Value path(args[0]->ToString());
-    GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
+    if (args.Length() > 1 && args[1]->IsTrue()) {
+      grn_db_open(ctx, *path);
+    } else {
+      GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
+    }
     if (ctx->rc != GRN_SUCCESS) {
       return ThrowException(Exception::Error(String::New(ctx->errbuf)));
     }
