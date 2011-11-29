@@ -1,12 +1,16 @@
 {
   "name": "nroonga",
-  "description": "A library for building groonga powered node",
+  "description": "A library for building groonga powered nodes",
   "version": "0.0.0",
   "author": "Yoji Shidara <dara@shidara.net>",
   "keywords": ["groonga", "fulltext", "search", "database"],
+  "homepage" : "http://nroonga.github.com/",
   "repository": {
     "type": "git",
     "url": "git://github.com/nroonga/nroonga.git"
+  },
+  "bugs": {
+    "url": "http://github.com/nroonga/nroonga/issues"
   },
   "devDependencies": {
     "express":"",
