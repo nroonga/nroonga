@@ -5,7 +5,7 @@ optionsToCommandString = (command, options) ->
   if options?
     for key, value of options
       args.push '--' + key
-      args.push value
+      args.push JSON.stringify(value)
   args.join(' ')
 
 nroonga.Database.prototype.commandSync = (command, options) ->
