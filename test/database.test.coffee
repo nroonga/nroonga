@@ -40,15 +40,18 @@ withTestDatabase = (callback) ->
       type: 'Site'
       source: 'title'
 
-    # TODO load should be done with just one API call ...
-    db.commandSyncString 'load --table Site'
-    db.commandSyncString '''
-    [
-      {"_key":"http://groonga.org/","title":"groonga - An open-source fulltext search engine and column store"},
-      {"_key":"http://groonga.rubyforge.org/","title":"Fulltext search by Ruby with groonga - Ranguba"},
-      {"_key":"http://mroonga.github.com/","title":"Groonga storage engine - Fast fulltext search on MySQL"}
-    ]
-    '''
+    db.commandSync 'load',
+      table: 'Site'
+      values: JSON.stringify [
+        _key: "http://groonga.org/"
+        title: "groonga - An open-source fulltext search engine and column store"
+      ,
+        _key: "http://groonga.rubyforge.org/"
+        title: "Fulltext search by Ruby with groonga - Ranguba"
+      ,
+        _key: "http://mroonga.github.com/"
+        title: "Groonga storage engine - Fast fulltext search on MySQL"
+      ]
 
     callback(db)
 
