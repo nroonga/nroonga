@@ -22,7 +22,10 @@ nroonga.Database.prototype.command = (command, options, callback) ->
 
   wrappedCallback = if callback?
     (error, data) ->
-      callback(error, if data? then JSON.parse(data) else undefined)
+      if error?
+        callback error
+      else
+        callback undefined, JSON.parse(data)
   else
     undefined
 
