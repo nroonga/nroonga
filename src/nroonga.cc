@@ -41,7 +41,7 @@ Handle<Value> Database::New(const Arguments& args) {
   } else if(args[0]->IsString()) {
     String::Utf8Value path(args[0]->ToString());
     if (args.Length() > 1 && args[1]->IsTrue()) {
-      grn_db_open(ctx, *path);
+      db->database = grn_db_open(ctx, *path);
     } else {
       GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
     }
