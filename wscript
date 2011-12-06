@@ -1,4 +1,5 @@
 import os
+import sys
 from os.path import exists
 from shutil import copy2 as copy, rmtree
 import multiprocessing
@@ -67,6 +68,10 @@ def build_internal_groonga(bld):
     if os.path.exists(groonga_target):
       rmtree(groonga_target)
   elif '../deps' in bld.env['CPPPATH_GROONGA'][0]:
+    if not os.path.exists(GROONGA_SOURCE_TREE):
+      Utils.pprint('RED','Please re-run node-waf configure')
+      sys.exit()
+
     os.chdir(GROONGA_SOURCE_TREE)
     Utils.pprint('GREEN', 'Building groonga')
     os.system('make -j %d' % multiprocessing.cpu_count())
