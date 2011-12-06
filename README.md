@@ -54,3 +54,8 @@ Send `command` to groonga. Block until results returned.
 
 Asynchronously send `command` to groonga. Callback will be given two arguments `(error, data)`.
 
+### License
+
+LGPL 2.1 or later. See license/lgpl-2.1.txt.
+(Yoji Shidara has a right to change the license including contributed patches.)
+
