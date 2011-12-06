@@ -62,7 +62,7 @@ def configure_internal_groonga(conf):
   os.chdir('../../')
 
 def build_internal_groonga(bld):
-  if Options.commands['clean']:
+  if Options.commands['clean'] and bld.env['GROONGA_TARGET']:
     groonga_target = bld.env['GROONGA_TARGET'][0]
     if os.path.exists(groonga_target):
       rmtree(groonga_target)
