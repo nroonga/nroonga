@@ -1,6 +1,6 @@
 #include <v8.h>
 #include <node.h>
-#include <groonga/groonga.h>
+#include <groonga.h>
 #include "nroonga.h"
 
 namespace nroonga {

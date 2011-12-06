@@ -3,7 +3,7 @@
 #include <node.h>
 #include <node_object_wrap.h>
 #include <v8.h>
-#include <groonga/groonga.h>
+#include <groonga.h>
 
 #include <string>
 
