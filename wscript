@@ -25,7 +25,7 @@ def configure_internal_groonga(conf):
 
   if not os.path.exists('deps'):
     os.mkdir('deps')
-    os.chdir('deps')
+  os.chdir('deps')
 
   if not os.path.exists(tar_gz):
     Utils.pprint('GREEN', 'Fetching %s' % groonga_url)
