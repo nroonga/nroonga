@@ -53,7 +53,7 @@ def configure_internal_groonga(conf):
   groonga_target = os.path.join(conf.blddir, conf.envname, 'groonga')
   if not os.path.exists('config.status'):
     Utils.pprint('GREEN', 'Configuring groonga')
-    os.system('./configure --prefix=%s' % groonga_target)
+    os.system('./configure --prefix=%s --disable-document' % groonga_target)
   else:
     Utils.pprint('GREEN', 'Groonga already configured')
 
