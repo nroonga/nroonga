@@ -1,5 +1,6 @@
 #include <v8.h>
 #include <node.h>
+#include <node_buffer.h>
 #include <groonga.h>
 #include "nroonga.h"
 
@@ -86,25 +87,20 @@ void Database::CommandWork(uv_work_t* req) {
 void Database::CommandAfter(uv_work_t* req) {
   HandleScope scope;
   Baton* baton = static_cast<Baton*>(req->data);
+  Handle<Value> argv[2];
   if (baton->error) {
-      Local<Value> error = Exception::Error(String::New(baton->context.errbuf));
-      Local<Value> argv[] = { error };
-      TryCatch try_catch;
-      baton->callback->Call(v8::Context::GetCurrent()->Global(), 1, argv);
-      if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-      }
+    argv[0] = Exception::Error(String::New(baton->context.errbuf));
+    argv[1] = Null();
   } else {
-      Local<Value> argv[] = {
-        Local<Value>::New(Undefined()),
-        Local<Value>::New(String::New(baton->result, baton->result_length))
-      };
-      TryCatch try_catch;
-      baton->callback->Call(v8::Context::GetCurrent()->Global(), 2, argv);
-      if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-      }
+    argv[0] = Null();
+    argv[1] = Buffer::New(baton->result, baton->result_length)->handle_;
   }
+  TryCatch try_catch;
+  baton->callback->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+
   grn_ctx_fin(&baton->context);
   baton->callback.Dispose();
   delete baton;
@@ -169,7 +165,7 @@ Handle<Value> Database::CommandSyncString(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("grn_ctx_recv returned error")));
   }
 
-  return scope.Close(String::New(result, result_length));
+  return scope.Close(Buffer::New(result, result_length)->handle_);
 }
 
 void InitNroonga(Handle<Object> target) {

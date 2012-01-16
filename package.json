@@ -18,6 +18,7 @@
     "expresso":""
   },
   "dependencies": {
+    "msgpack2":""
   },
   "scripts": {
     "test": "expresso",

@@ -1,4 +1,5 @@
 nroonga = module.exports = require('./nroonga_bindings.node')
+msgpack = require('msgpack2')
 
 optionsToCommandString = (command, options) ->
   args = [command]
@@ -8,24 +9,33 @@ optionsToCommandString = (command, options) ->
       args.push JSON.stringify(value)
   args.join(' ')
 
-nroonga.Database.prototype.commandSync = (command, options) ->
+overrideOutputType = (optionsGiven, type) ->
+  options = {}
+  for key, value of optionsGiven
+    options[key] = value
+  options.output_type = type
+  options
+
+nroonga.Database.prototype.commandSync = (command, options={}) ->
+  options = overrideOutputType(options, 'msgpack')
   result = this.commandSyncString(optionsToCommandString(command, options))
   if result.length > 0
-    JSON.parse(result)
+    msgpack.unpack(result)
   else
     undefined
 
 nroonga.Database.prototype.command = (command, options, callback) ->
   if arguments.length == 2
     callback = options
-    options = undefined
+    options = {}
+  options = overrideOutputType(options, 'msgpack')
 
   wrappedCallback = if callback?
     (error, data) ->
       if error?
         callback error
       else
-        callback undefined, JSON.parse(data)
+        callback undefined, msgpack.unpack(data)
   else
     undefined
 
