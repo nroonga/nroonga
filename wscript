@@ -88,8 +88,8 @@ def configure(conf):
   else:
     Utils.pprint('GREEN', 'Groonga not installed. Trying to build groonga internally ...')
     configure_internal_groonga(conf)
-    os.environ['PKG_CONFIG_PATH'] = GROONGA_SOURCE_TREE
-    conf.check_cfg(package='groonga', args='--cflags --libs')
+    os.environ['PKG_CONFIG_PATH'] = 'build/Release/groonga/lib/pkgconfig'
+    Utils.pprint('RED', conf.check_cfg(package='groonga', args='--cflags --libs'))
 
 def build(bld):
   build_internal_groonga(bld)
