@@ -23,5 +23,8 @@
     "test": "expresso",
     "watch": "coffee -c -w -o lib src"
   },
-  "main": "./lib/nroonga"
+  "main": "./lib/nroonga",
+  "engines": {
+    "node": "~ 0.6.9"
+  }
 }
