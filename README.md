@@ -6,7 +6,7 @@ You can write your custom full-text search backend on the top of [node.js](http:
 
 ### Requirements:
 
-    [groonga](http://groonga.org) built with MessagePack support
+* [groonga](http://groonga.org) built with MessagePack support
 
 
 ### To install:
