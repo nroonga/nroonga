@@ -1,12 +1,15 @@
 ## nroonga
 
 [nroonga](http://nroonga.github.com) is a library for building groonga powered nodes.
-You can write your custom full-text search backend on the top of [node.js](http://nodejs.org) and [groonga](http://groonga.org).
+You can write your custom full-text search backend on the top of [node.js](http://nodejs.org) and [groonga][].
 
 
 ### Requirements:
 
-* [groonga](http://groonga.org) built with [MessagePack](http://msgpack.org/) support
+* [groonga][] built with [MessagePack][] support
+
+  [groonga]:http://groonga.org
+  [MessagePack]:http://msgpack.org/
 
 ### To install:
 
