@@ -1,4 +1,4 @@
-nroonga = module.exports = require('./nroonga_bindings.node')
+nroonga = module.exports = require('../build/Release/nroonga_bindings.node')
 msgpack = require('msgpack2')
 
 optionsToCommandString = (command, options) ->

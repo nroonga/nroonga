@@ -21,10 +21,11 @@
   },
   "scripts": {
     "test": "expresso",
-    "watch": "coffee -c -w -o lib src"
+    "watch": "coffee -c -w -o lib src",
+    "install": "node-gyp rebuild"
   },
   "main": "./lib/nroonga",
   "engines": {
-    "node": "~ 0.6.9"
+    "node": "~ 0.6.15"
   }
 }
