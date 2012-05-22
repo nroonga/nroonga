@@ -61,11 +61,11 @@ describe 'nroonga.Database', ->
 
   describe '#commandSync', ->
     status = db.commandSync('status')
-    it 'should return groonga result', ->
+    it 'should return groonga results', ->
       should.exist(status.version)
 
   describe '#command', ->
-    it 'should return nroonga', (done) ->
+    it 'should return groonga results', (done) ->
       db.command 'status', (error, data) ->
         throw error if error
         should.exist(data.version)
