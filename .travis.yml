@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+ - 0.6
+install:
+ - echo "deb http://downloads.sourceforge.net/project/cutter/ubuntu/ $(lsb_release --short --codename) main" | sudo tee /etc/apt/sources.list.d/cutter.list
+ - sudo apt-get -y --allow-unauthenticated install groonga-keyring
+ - sudo apt-get -y libgroonga-dev
