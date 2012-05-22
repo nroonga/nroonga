@@ -14,13 +14,14 @@
   },
   "devDependencies": {
     "coffee-script":"",
-    "expresso":""
+    "mocha":"",
+    "should":""
   },
   "dependencies": {
     "msgpack2":""
   },
   "scripts": {
-    "test": "expresso",
+    "test": "./node_modules/.bin/mocha --reporter list -r should --compilers coffee:coffee-script",
     "watch": "coffee -c -w -o lib src",
     "install": "node-gyp rebuild"
   },

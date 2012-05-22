@@ -1,5 +1,6 @@
 nroonga = require('../lib/nroonga')
 fs = require('fs')
+should = require('should')
 
 temporaryDatabase = (callback) ->
   tempdir = 'test/tmp'
@@ -55,47 +56,48 @@ withTestDatabase = (callback) ->
 
     callback(db)
 
-module.exports =
-  'get groonga status by Database#commandSync': (beforeExit, assert) ->
-    db = new nroonga.Database()
+describe 'nroonga.Database', ->
+  db = new nroonga.Database()
+
+  describe '#commandSync', ->
     status = db.commandSync('status')
-    assert.isDefined status.version
+    it 'should return groonga result', ->
+      should.exist(status.version)
 
-  'get groonga status by Database#command': (beforeExit, assert) ->
-    db = new nroonga.Database()
-    status = null
-    db.command 'status', (error, data) ->
-      status = data
+  describe '#command', ->
+    it 'should return nroonga', (done) ->
+      db.command 'status', (error, data) ->
+        throw error if error
+        should.exist(data.version)
+        done()
 
-    beforeExit ->
-      assert.isDefined status.version
-
-  'open database whose name is not string': (beforeExit, assert) ->
-    errorThrown = null
-    try
+describe 'database whose name is not string', ->
+  it 'should throw an exception', ->
+    (->
       new nroonga.Database(1)
-    catch error
-      errorThrown = error
+    ).should.throw()
 
-    beforeExit ->
-      assert.ok(errorThrown, 'No error thrown')
-
-  'create table and store data': (beforeExit, assert) ->
+describe 'database with data stored', ->
+  it 'should select records', (done) ->
     withTestDatabase (db) ->
-      assert.equal 3, db.commandSync('select', table: 'Site')[0][0][0]
+      matched = db.commandSync('select', table: 'Site')
+      matched[0][0][0].should.equal(3)
+      done()
 
-  'search data': (beforeExit, assert) ->
+  it 'should search by query', (done) ->
     withTestDatabase (db) ->
       matched = db.commandSync 'select',
         table: 'Site'
         match_columns: 'title'
         query: 'ruby'
-      assert.equal 1, matched[0][0][0]
+      matched[0][0][0].should.equal(1)
+      done()
 
-  'query including space': (beforeExit, assert) ->
+  it 'should search by query including space', (done) ->
     withTestDatabase (db) ->
       matched = db.commandSync 'select',
         table: 'Site'
         match_columns: 'title'
         query: 'search ranguba'
-      assert.equal 1, matched[0][0][0]
+      matched[0][0][0].should.equal(1)
+      done()
