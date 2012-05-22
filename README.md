@@ -1,5 +1,7 @@
 ## nroonga
 
+[![Build Status](https://secure.travis-ci.org/nroonga/nroonga.png?branch=master)](http://travis-ci.org/nroonga/nroonga)
+
 [nroonga](http://nroonga.github.com) is a library for building groonga powered nodes.
 You can write your custom full-text search backend on the top of [node.js](http://nodejs.org) and [groonga][].
 
