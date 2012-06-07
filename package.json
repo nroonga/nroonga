@@ -18,7 +18,8 @@
     "should":""
   },
   "dependencies": {
-    "msgpack2":""
+    "msgpack2":"",
+    "node-gyp":""
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter list -r should --compilers coffee:coffee-script",
