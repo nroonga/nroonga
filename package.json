@@ -4,7 +4,7 @@
   "version": "0.1.6",
   "author": "Yoji Shidara <dara@shidara.net>",
   "keywords": ["groonga", "fulltext", "search", "database"],
-  "homepage" : "http://nroonga.github.com/",
+  "homepage": "http://nroonga.github.com/",
   "repository": {
     "type": "git",
     "url": "git://github.com/nroonga/nroonga.git"
@@ -13,13 +13,13 @@
     "url": "http://github.com/nroonga/nroonga/issues"
   },
   "devDependencies": {
-    "coffee-script":"",
-    "mocha":"",
-    "should":""
+    "coffee-script": "",
+    "mocha": "",
+    "should": ""
   },
   "dependencies": {
-    "msgpack2":"",
-    "node-gyp":""
+    "msgpack2": "",
+    "node-gyp": ""
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter list -r should --compilers coffee:coffee-script",
