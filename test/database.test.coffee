@@ -101,3 +101,25 @@ describe 'database with data stored', ->
         query: 'search ranguba'
       matched[0][0][0].should.equal(1)
       done()
+
+  it 'should dump all records', (done) ->
+    withTestDatabase (db) ->
+      result = db.commandSync('dump', tables: 'Site')
+      expected_dump = 'table_create Site TABLE_HASH_KEY ShortText\n' +
+                      'column_create Site title COLUMN_SCALAR ShortText\n' +
+                      'table_create Terms TABLE_PAT_KEY|KEY_NORMALIZE ' +
+                        'ShortText --default_tokenizer TokenBigram\n' +
+                      'column_create Terms entry_title ' +
+                        'COLUMN_INDEX|WITH_POSITION Site title\n' +
+                      'load --table Site\n' +
+                      '[\n' +
+                      '["_key","title"],\n' +
+                      '["http://groonga.org/","groonga - An open-source ' +
+                        'fulltext search engine and column store"],\n' +
+                      '["http://groonga.rubyforge.org/","Fulltext search by ' +
+                        'Ruby with groonga - Ranguba"],\n' +
+                      '["http://mroonga.github.com/","Groonga storage ' +
+                        'engine - Fast fulltext search on MySQL"]\n' +
+                      ']'
+      result.should.equal(expected_dump)
+      done()

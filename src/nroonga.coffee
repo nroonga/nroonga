@@ -16,11 +16,17 @@ overrideOutputType = (optionsGiven, type) ->
   options.output_type = type
   options
 
+formatResult = (result, command) ->
+  if command == 'dump'
+    result.toString('UTF-8')
+  else
+    msgpack.unpack(result)
+
 nroonga.Database.prototype.commandSync = (command, options={}) ->
   options = overrideOutputType(options, 'msgpack')
   result = this.commandSyncString(optionsToCommandString(command, options))
   if result.length > 0
-    msgpack.unpack(result)
+    formatResult(result, command)
   else
     undefined
 
@@ -35,7 +41,7 @@ nroonga.Database.prototype.command = (command, options, callback) ->
       if error?
         callback error
       else
-        callback undefined, msgpack.unpack(data)
+        callback undefined, formatResult(data, command)
   else
     undefined
 
