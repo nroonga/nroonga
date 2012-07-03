@@ -1,0 +1,114 @@
+{
+  "name": "nroonga",
+  "version": "0.1.8",
+  "dependencies": {
+    "msgpack2": {
+      "version": "0.1.7"
+    },
+    "node-gyp": {
+      "version": "0.5.6",
+      "dependencies": {
+        "glob": {
+          "version": "3.1.10",
+          "dependencies": {
+            "inherits": {
+              "version": "1.0.0"
+            }
+          }
+        },
+        "graceful-fs": {
+          "version": "1.1.8"
+        },
+        "fstream": {
+          "version": "0.1.18",
+          "dependencies": {
+            "inherits": {
+              "version": "1.0.0"
+            }
+          }
+        },
+        "minimatch": {
+          "version": "0.2.5",
+          "dependencies": {
+            "lru-cache": {
+              "version": "1.1.0"
+            }
+          }
+        },
+        "mkdirp": {
+          "version": "0.3.3"
+        },
+        "nopt": {
+          "version": "1.0.10",
+          "dependencies": {
+            "abbrev": {
+              "version": "1.0.3"
+            }
+          }
+        },
+        "npmlog": {
+          "version": "0.0.2",
+          "dependencies": {
+            "ansi": {
+              "version": "0.1.2"
+            }
+          }
+        },
+        "request": {
+          "version": "2.9.203"
+        },
+        "rimraf": {
+          "version": "2.0.2"
+        },
+        "semver": {
+          "version": "1.0.14"
+        },
+        "tar": {
+          "version": "0.1.13",
+          "dependencies": {
+            "inherits": {
+              "version": "1.0.0"
+            },
+            "block-stream": {
+              "version": "0.0.6"
+            }
+          }
+        },
+        "which": {
+          "version": "1.0.5"
+        }
+      }
+    },
+    "coffee-script": {
+      "version": "1.3.3"
+    },
+    "should": {
+      "version": "0.6.3"
+    },
+    "mocha": {
+      "version": "1.2.2",
+      "dependencies": {
+        "commander": {
+          "version": "0.6.1"
+        },
+        "growl": {
+          "version": "1.5.1"
+        },
+        "jade": {
+          "version": "0.26.3",
+          "dependencies": {
+            "mkdirp": {
+              "version": "0.3.0"
+            }
+          }
+        },
+        "diff": {
+          "version": "1.0.2"
+        },
+        "debug": {
+          "version": "0.7.0"
+        }
+      }
+    }
+  }
+}
