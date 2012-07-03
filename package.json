@@ -24,10 +24,11 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter list -r should --compilers coffee:coffee-script",
     "watch": "coffee -c -w -o lib src",
-    "coffee": "coffee -c -o lib src"
+    "coffee": "coffee -c -o lib src",
+    "install": "node-gyp rebuild"
   },
   "main": "./lib/nroonga",
   "engines": {
-    "node": "~ 0.8.0"
+    "node": ">= 0.6.12"
   }
 }
