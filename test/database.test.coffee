@@ -71,6 +71,14 @@ describe 'nroonga.Database', ->
         should.exist(data.version)
         done()
 
+describe 'empty database', ->
+  db = new nroonga.Database()
+
+  describe '#dump', ->
+    it 'should return empty string', ->
+      result = db.commandSync('dump')
+      should.equal(result, '')
+
 describe 'database whose name is not string', ->
   it 'should throw an exception', ->
     (->

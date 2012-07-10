@@ -20,15 +20,15 @@ formatResult = (result, command) ->
   if command == 'dump'
     result.toString('UTF-8')
   else
-    msgpack.unpack(result)
+    if result.length > 0
+      msgpack.unpack(result)
+    else
+      undefined
 
 nroonga.Database.prototype.commandSync = (command, options={}) ->
   options = overrideOutputType(options, 'msgpack')
   result = this.commandSyncString(optionsToCommandString(command, options))
-  if result.length > 0
-    formatResult(result, command)
-  else
-    undefined
+  formatResult(result, command)
 
 nroonga.Database.prototype.command = (command, options, callback) ->
   if arguments.length == 2
