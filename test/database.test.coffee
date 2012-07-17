@@ -79,14 +79,14 @@ describe 'nroonga.Database', ->
       db.close()
       (->
         db.close()
-      ).should.throw('Database already closed');
+      ).should.throw('Database already closed')
 
   describe '#commandSync for closed database', ->
     it 'should raise an exception', ->
       db.close()
       (->
         db.commandSync 'status'
-      ).should.throw('Database already closed');
+      ).should.throw('Database already closed')
 
   describe '#command for closed database', ->
     it 'should return an error', ->
@@ -94,7 +94,7 @@ describe 'nroonga.Database', ->
       (->
         db.command 'status', (error, data) ->
           # do nothing
-      ).should.throw('Database already closed');
+      ).should.throw('Database already closed')
 
 describe 'empty database', ->
   db = new nroonga.Database()
