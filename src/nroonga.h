@@ -41,7 +41,9 @@ class Database : ObjectWrap {
     }
     bool Cleanup();
     ~Database() {
-      Cleanup();
+      if (!closed) {
+        assert(Cleanup());
+      }
     }
     static void CommandWork(uv_work_t* req);
     static void CommandAfter(uv_work_t* req);
