@@ -67,6 +67,10 @@ Send `command` to groonga. Block until results returned.
 
 Asynchronously send `command` to groonga. Callback will be given two arguments `(error, data)`.
 
+### database.close()
+
+Close database. After `close` called, any API calls for the database raise an exception.
+
 ### License
 
 LGPL 2.1 or later. See license/lgpl-2.1.txt.

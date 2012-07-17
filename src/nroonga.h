@@ -15,6 +15,8 @@ namespace nroonga {
 class Database : ObjectWrap {
   grn_ctx context;
   grn_obj *database;
+  bool closed;
+
   public:
     static void Initialize(v8::Handle<v8::Object> target);
 
@@ -34,13 +36,12 @@ class Database : ObjectWrap {
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
     static v8::Handle<v8::Value> CommandString(const v8::Arguments& args);
     static v8::Handle<v8::Value> CommandSyncString(const v8::Arguments& args);
+    static v8::Handle<v8::Value> Close(const v8::Arguments& args);
     Database() : ObjectWrap() {
     }
-    void CleanupDatabase() {
-      grn_ctx_fin(&context);
-    }
+    bool Cleanup();
     ~Database() {
-      CleanupDatabase();
+      Cleanup();
     }
     static void CommandWork(uv_work_t* req);
     static void CommandAfter(uv_work_t* req);

@@ -21,6 +21,7 @@ void Database::Initialize(Handle<Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(t, "commandString", Database::CommandString);
   NODE_SET_PROTOTYPE_METHOD(t, "commandSyncString", Database::CommandSyncString);
+  NODE_SET_PROTOTYPE_METHOD(t, "close", Database::Close);
 
   target->Set(String::NewSymbol("Database"), t->GetFunction());
 }
@@ -35,6 +36,7 @@ Handle<Value> Database::New(const Arguments& args) {
   }
 
   Database *db = new Database();
+  db->closed = true;
   grn_ctx *ctx = &db->context;
   grn_ctx_init(ctx, 0);
   if (args[0]->IsUndefined()) {
@@ -53,8 +55,36 @@ Handle<Value> Database::New(const Arguments& args) {
     return ThrowException(Exception::TypeError(String::New("Bad parameter")));
   }
 
+  db->closed = false;
   db->Wrap(args.Holder());
   return args.This();
+}
+
+bool Database::Cleanup() {
+  if (grn_obj_close(&context, database) != GRN_SUCCESS) {
+    return false;
+  }
+  if (grn_ctx_fin(&context) != GRN_SUCCESS) {
+    return false;
+  }
+  this->closed = true;
+
+  return true;
+}
+
+Handle<Value> Database::Close(const Arguments& args) {
+  HandleScope scope;
+  Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
+
+  if (db->closed) {
+    return ThrowException(Exception::Error(String::New("Database already closed")));
+  }
+
+  if (db->Cleanup()) {
+    return True();
+  } else {
+    return ThrowException(Exception::Error(String::New("Failed to close the database")));
+  }
 }
 
 void Database::CommandWork(uv_work_t* req) {
@@ -122,6 +152,10 @@ Handle<Value> Database::CommandString(const Arguments& args) {
     }
   }
 
+  if (db->closed) {
+    return ThrowException(Exception::Error(String::New("Database already closed")));
+  }
+
   Baton* baton = new Baton();
   baton->request.data = baton;
   baton->callback = Persistent<Function>::New(callback);
@@ -152,6 +186,10 @@ Handle<Value> Database::CommandSyncString(const Arguments& args) {
   unsigned int result_length;
   int flags;
   String::Utf8Value command(args[0]->ToString());
+
+  if (db->closed) {
+    return ThrowException(Exception::Error(String::New("Database already closed")));
+  }
 
   rc = grn_ctx_send(ctx, *command, command.length(), 0);
   if (rc < 0) {

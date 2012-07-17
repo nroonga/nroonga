@@ -11,6 +11,7 @@ temporaryDatabase = (callback) ->
     try
       callback(db)
     finally
+      db.close()
       fs.readdir tempdir, (err, files) ->
         throw err if err?
         re = RegExp('^' + databaseName)
@@ -57,11 +58,13 @@ withTestDatabase = (callback) ->
     callback(db)
 
 describe 'nroonga.Database', ->
-  db = new nroonga.Database()
+  db = null
+  beforeEach ->
+    db = new nroonga.Database()
 
   describe '#commandSync', ->
-    status = db.commandSync('status')
     it 'should return groonga results', ->
+      status = db.commandSync('status')
       should.exist(status.version)
 
   describe '#command', ->
@@ -70,6 +73,28 @@ describe 'nroonga.Database', ->
         throw error if error
         should.exist(data.version)
         done()
+
+  describe 'duplicated #close call', ->
+    it 'should raise an exception', ->
+      db.close()
+      (->
+        db.close()
+      ).should.throw('Database already closed');
+
+  describe '#commandSync for closed database', ->
+    it 'should raise an exception', ->
+      db.close()
+      (->
+        db.commandSync 'status'
+      ).should.throw('Database already closed');
+
+  describe '#command for closed database', ->
+    it 'should return an error', ->
+      db.close()
+      (->
+        db.command 'status', (error, data) ->
+          # do nothing
+      ).should.throw('Database already closed');
 
 describe 'empty database', ->
   db = new nroonga.Database()
