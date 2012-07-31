@@ -117,6 +117,12 @@ describe 'database with data stored', ->
       matched[0][0][0].should.equal(3)
       done()
 
+  it 'should select records ignoring the null valued option', (done) ->
+    withTestDatabase (db) ->
+      matched = db.commandSync('select', table: 'Site', query: null)
+      matched[0][0][0].should.equal(3)
+      done()
+
   it 'should search by query', (done) ->
     withTestDatabase (db) ->
       matched = db.commandSync 'select',

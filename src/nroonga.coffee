@@ -5,8 +5,9 @@ optionsToCommandString = (command, options) ->
   args = [command]
   if options?
     for key, value of options
-      args.push '--' + key
-      args.push JSON.stringify(value)
+      if value?
+        args.push '--' + key
+        args.push JSON.stringify(value)
   args.join(' ')
 
 overrideOutputType = (optionsGiven, type) ->
