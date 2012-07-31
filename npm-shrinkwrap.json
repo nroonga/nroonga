@@ -1,6 +1,6 @@
 {
   "name": "nroonga",
-  "version": "0.1.10",
+  "version": "0.2.2",
   "dependencies": {
     "msgpack2": {
       "version": "0.1.7"
