@@ -47,10 +47,6 @@ A CLI example (like groonga stand-alone mode):
 
     % coffee examples/prompt.coffee
 
-A http daemon example (like groonga server mode):
-
-    % coffee examples/server.coffee
-
 ### Examples
 
     var nroonga = require('nroonga');
