@@ -6,6 +6,13 @@
       "include_dirs": ["<!@(pkg-config --cflags-only-I groonga | sed -e 's/-I//g')"],
       "ldflags": ["<!@(pkg-config --libs-only-L groonga)"],
       "libraries": ["<!@(pkg-config --libs-only-l groonga)"],
+      "conditions": [
+        ['OS == "mac"', {
+          "xcode_settings": {
+            "OTHER_LDFLAGS": ["<!@(pkg-config --libs-only-L groonga)"]
+          }
+        }]
+      ]
     }
   ]
 }
