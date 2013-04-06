@@ -146,8 +146,9 @@ describe 'database with data stored', ->
       result = db.commandSync('dump', tables: 'Site')
       expected_dump = 'table_create Site TABLE_HASH_KEY ShortText\n' +
                       'column_create Site title COLUMN_SCALAR ShortText\n' +
-                      'table_create Terms TABLE_PAT_KEY|KEY_NORMALIZE ' +
-                        'ShortText --default_tokenizer TokenBigram\n' +
+                      'table_create Terms TABLE_PAT_KEY ' +
+                        'ShortText --default_tokenizer TokenBigram ' +
+                        '--normalizer NormalizerAuto\n' +
                       'column_create Terms entry_title ' +
                         'COLUMN_INDEX|WITH_POSITION Site title\n' +
                       'load --table Site\n' +
