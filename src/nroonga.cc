@@ -167,7 +167,7 @@ Handle<Value> Database::CommandString(const Arguments& args) {
   uv_queue_work(uv_default_loop(),
       &baton->request,
       CommandWork,
-      CommandAfter
+      (uv_after_work_cb)CommandAfter
       );
   return Undefined();
 }
