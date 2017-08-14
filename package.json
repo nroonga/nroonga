@@ -17,9 +17,7 @@
     "mocha": "",
     "should": ""
   },
-  "dependencies": {
-    "msgpack": ""
-  },
+  "dependencies": {},
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter list -r should --compilers coffee:coffee-script",
     "install": "node-gyp rebuild"
