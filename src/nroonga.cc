@@ -219,10 +219,7 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
 }
 
 void InitNroonga(Handle<Object> target) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
   grn_init();
-
   Database::Initialize(target);
 }
 
