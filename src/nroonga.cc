@@ -132,14 +132,6 @@ void Database::CommandAfter(uv_work_t* req) {
     argv[1] = Buffer::New(isolate, baton->result, baton->result_length).ToLocalChecked();
   }
   Local<Function>::New(isolate, baton->callback)->Call(isolate->GetCurrentContext()->Global(), 2, argv);
-  /*
-  TryCatch try_catch(isolate);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-
-  baton->callback.Dispose();
-  */
   grn_ctx_fin(&baton->context);
   delete baton;
 }
