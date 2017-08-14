@@ -1,60 +1,80 @@
 {
   "name": "nroonga",
-  "version": "0.2.4",
+  "version": "0.2.5",
+  "lockfileVersion": 1,
+  "requires": true,
   "dependencies": {
-    "msgpack": {
-      "version": "0.1.8",
-      "from": "msgpack@0.1.8"
-    },
     "coffee-script": {
       "version": "1.6.2",
-      "from": "coffee-script@"
-    },
-    "should": {
-      "version": "1.2.2",
-      "from": "should@",
-      "resolved": "https://registry.npmjs.org/should/-/should-1.2.2.tgz"
+      "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.6.2.tgz",
+      "integrity": "sha1-/ZyINpweQeMwegoWDXE/IlE8k7M="
     },
     "mocha": {
       "version": "1.9.0",
-      "from": "mocha@",
       "resolved": "https://registry.npmjs.org/mocha/-/mocha-1.9.0.tgz",
+      "integrity": "sha1-FBBUsTywPOXOWa7OPWXVygG43wo=",
+      "requires": {
+        "commander": "0.6.1",
+        "debug": "0.7.2",
+        "diff": "1.0.2",
+        "growl": "1.7.0",
+        "jade": "0.26.3",
+        "mkdirp": "0.3.3",
+        "ms": "0.3.0"
+      },
       "dependencies": {
         "commander": {
           "version": "0.6.1",
-          "from": "commander@0.6.1"
-        },
-        "growl": {
-          "version": "1.7.0",
-          "from": "growl@1.7.x"
-        },
-        "jade": {
-          "version": "0.26.3",
-          "from": "jade@0.26.3",
-          "dependencies": {
-            "mkdirp": {
-              "version": "0.3.0",
-              "from": "mkdirp@0.3.0"
-            }
-          }
-        },
-        "diff": {
-          "version": "1.0.2",
-          "from": "diff@1.0.2"
+          "resolved": "https://registry.npmjs.org/commander/-/commander-0.6.1.tgz",
+          "integrity": "sha1-+mihT2qUXVTbvlDYzbMyDp47GgY="
         },
         "debug": {
           "version": "0.7.2",
-          "from": "debug@*"
+          "resolved": "https://registry.npmjs.org/debug/-/debug-0.7.2.tgz",
+          "integrity": "sha1-BWaSyGZwl38RXegpF5GLjouaEPA="
+        },
+        "diff": {
+          "version": "1.0.2",
+          "resolved": "https://registry.npmjs.org/diff/-/diff-1.0.2.tgz",
+          "integrity": "sha1-Suc/Gu6Nb89ITxoc53zmUdm38Mk="
+        },
+        "growl": {
+          "version": "1.7.0",
+          "resolved": "https://registry.npmjs.org/growl/-/growl-1.7.0.tgz",
+          "integrity": "sha1-3i1mE20ALhErpw8/EMMc98NQsto="
+        },
+        "jade": {
+          "version": "0.26.3",
+          "resolved": "https://registry.npmjs.org/jade/-/jade-0.26.3.tgz",
+          "integrity": "sha1-jxDXl32NefL2/4YqgbBRPMslaGw=",
+          "requires": {
+            "commander": "0.6.1",
+            "mkdirp": "0.3.0"
+          },
+          "dependencies": {
+            "mkdirp": {
+              "version": "0.3.0",
+              "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.0.tgz",
+              "integrity": "sha1-G79asbqCevI1dRQ0kEJkVfSB/h4="
+            }
+          }
         },
         "mkdirp": {
           "version": "0.3.3",
-          "from": "mkdirp@0.3.3"
+          "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.3.tgz",
+          "integrity": "sha1-WV4lHBNww6aLqyE20ONIuBBa3xM="
         },
         "ms": {
           "version": "0.3.0",
-          "from": "ms@0.3.0"
+          "resolved": "https://registry.npmjs.org/ms/-/ms-0.3.0.tgz",
+          "integrity": "sha1-A+3DSNYT5mpWSGz9rFO8vomcvWE="
         }
       }
+    },
+    "should": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/should/-/should-1.2.2.tgz",
+      "integrity": "sha1-DwP3dQZtnqJjJpDJF7EoJPzB1YI="
     }
   }
 }
