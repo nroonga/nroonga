@@ -5,31 +5,33 @@ namespace nroonga {
 
 using namespace v8;
 
-static Persistent<FunctionTemplate> groonga_context_constructor;
+static Persistent<Function> groonga_context_constructor;
 
-void Database::Initialize(Handle<Object> target) {
-  HandleScope scope;
+void Database::Initialize(Handle<Object> exports) {
+  Isolate* isolate = Isolate::GetCurrent();
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(Database::New);
-  groonga_context_constructor = Persistent<FunctionTemplate>::New(t);
+  Local<FunctionTemplate> t = FunctionTemplate::New(isolate, New);
 
+  t->SetClassName(String::NewFromUtf8(isolate, "Database"));
   t->InstanceTemplate()->SetInternalFieldCount(1);
-  t->SetClassName(String::NewSymbol("Database"));
 
   NODE_SET_PROTOTYPE_METHOD(t, "commandString", Database::CommandString);
   NODE_SET_PROTOTYPE_METHOD(t, "commandSyncString", Database::CommandSyncString);
   NODE_SET_PROTOTYPE_METHOD(t, "close", Database::Close);
 
-  target->Set(String::NewSymbol("Database"), t->GetFunction());
+  groonga_context_constructor.Reset(isolate, t->GetFunction());
+  exports->Set(String::NewFromUtf8(isolate, "Database"), t->GetFunction());
 }
 
-Handle<Value> Database::New(const Arguments& args) {
-  HandleScope scope;
+void Database::New(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
 
   if (!args.IsConstructCall()) {
-    return ThrowException(Exception::TypeError(
-          String::New("Use the new operator to create new Database objects"))
-        );
+    isolate->ThrowException(Exception::TypeError(
+      String::NewFromUtf8(isolate, "Use the new operator to create new Database objects"))
+    );
+    return;
   }
 
   Database *db = new Database();
@@ -46,15 +48,17 @@ Handle<Value> Database::New(const Arguments& args) {
       GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
     }
     if (ctx->rc != GRN_SUCCESS) {
-      return ThrowException(Exception::Error(String::New(ctx->errbuf)));
+      isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
+      return;
     }
   } else {
-    return ThrowException(Exception::TypeError(String::New("Bad parameter")));
+    isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    return;
   }
 
   db->closed = false;
   db->Wrap(args.Holder());
-  return args.This();
+  args.GetReturnValue().Set(args.This());
 }
 
 bool Database::Cleanup() {
@@ -69,18 +73,22 @@ bool Database::Cleanup() {
   return true;
 }
 
-Handle<Value> Database::Close(const Arguments& args) {
-  HandleScope scope;
+void Database::Close(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
 
   if (db->closed) {
-    return ThrowException(Exception::Error(String::New("Database already closed")));
+    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Database already closed")));
+    return;
   }
 
   if (db->Cleanup()) {
-    return True();
+    args.GetReturnValue().Set(True(isolate));
+    return;
   } else {
-    return ThrowException(Exception::Error(String::New("Failed to close the database")));
+    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Failed to close the database")));
+    return;
   }
 }
 
@@ -112,50 +120,58 @@ void Database::CommandWork(uv_work_t* req) {
 }
 
 void Database::CommandAfter(uv_work_t* req) {
-  HandleScope scope;
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
   Baton* baton = static_cast<Baton*>(req->data);
   Handle<Value> argv[2];
   if (baton->error) {
-    argv[0] = Exception::Error(String::New(baton->context.errbuf));
-    argv[1] = Null();
+    argv[0] = Exception::Error(String::NewFromUtf8(isolate, baton->context.errbuf));
+    argv[1] = Null(isolate);
   } else {
-    argv[0] = Null();
-    argv[1] = Buffer::New(baton->result, baton->result_length)->handle_;
+    argv[0] = Null(isolate);
+    argv[1] = Buffer::New(isolate, baton->result, baton->result_length).ToLocalChecked();
   }
-  TryCatch try_catch;
-  baton->callback->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+  Local<Function>::New(isolate, baton->callback)->Call(isolate->GetCurrentContext()->Global(), 2, argv);
+  /*
+  TryCatch try_catch(isolate);
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
 
-  grn_ctx_fin(&baton->context);
   baton->callback.Dispose();
+  */
+  grn_ctx_fin(&baton->context);
   delete baton;
 }
 
-Handle<Value> Database::CommandString(const Arguments& args) {
-  HandleScope scope;
+void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
-    return ThrowException(Exception::TypeError(String::New("Bad parameter")));
+    isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    return;
   }
 
   Local<Function> callback;
   if (args.Length() >= 2) {
     if (!args[1]->IsFunction()) {
-      return ThrowException(Exception::TypeError(String::New("Second argument must be a callback function")));
+      isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Second argument must be a callback function")));
+      return;
     } else {
       callback = Local<Function>::Cast(args[1]);
     }
   }
 
   if (db->closed) {
-    return ThrowException(Exception::Error(String::New("Database already closed")));
+    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Database already closed")));
+    return;
   }
 
   Baton* baton = new Baton();
   baton->request.data = baton;
-  baton->callback = Persistent<Function>::New(callback);
+  baton->callback.Reset(isolate, callback);
+
 
   String::Utf8Value command(args[0]->ToString());
   baton->database = db->database;
@@ -166,15 +182,18 @@ Handle<Value> Database::CommandString(const Arguments& args) {
       CommandWork,
       (uv_after_work_cb)CommandAfter
       );
-  return Undefined();
+
+  args.GetReturnValue().Set(Undefined(isolate));
 }
 
-Handle<Value> Database::CommandSyncString(const Arguments& args) {
-  HandleScope scope;
+void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
 
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
-    return ThrowException(Exception::TypeError(String::New("Bad parameter")));
+    isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    return;
   }
 
   int rc = -1;
@@ -185,26 +204,31 @@ Handle<Value> Database::CommandSyncString(const Arguments& args) {
   String::Utf8Value command(args[0]->ToString());
 
   if (db->closed) {
-    return ThrowException(Exception::Error(String::New("Database already closed")));
+    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Database already closed")));
+    return;
   }
 
   rc = grn_ctx_send(ctx, *command, command.length(), 0);
   if (rc < 0) {
-    return ThrowException(Exception::Error(String::New("grn_ctx_send returned error")));
+    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "grn_ctx_send returned error")));
+    return;
   }
   if (ctx->rc != GRN_SUCCESS) {
-    return ThrowException(Exception::Error(String::New(ctx->errbuf)));
+    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
+    return;
   }
   grn_ctx_recv(ctx, &result, &result_length, &flags);
   if (ctx->rc < 0) {
-    return ThrowException(Exception::Error(String::New("grn_ctx_recv returned error")));
+    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "grn_ctx_recv returned error")));
+    return;
   }
 
-  return scope.Close(Buffer::New(result, result_length)->handle_);
+  args.GetReturnValue().Set(Buffer::New(isolate, result, result_length).ToLocalChecked()->ToString());
 }
 
 void InitNroonga(Handle<Object> target) {
-  HandleScope scope;
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
   grn_init();
 
   Database::Initialize(target);

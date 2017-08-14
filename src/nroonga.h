@@ -13,7 +13,7 @@ using namespace node;
 
 namespace nroonga {
 
-class Database : ObjectWrap {
+class Database : public node::ObjectWrap {
   grn_ctx context;
   grn_obj *database;
   bool closed;
@@ -34,10 +34,10 @@ class Database : ObjectWrap {
     };
 
   protected:
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CommandString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CommandSyncString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Close(const v8::Arguments& args);
+    static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static void CommandString(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static void CommandSyncString(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static void Close(const v8::FunctionCallbackInfo<v8::Value>& args);
     Database() : ObjectWrap() {
     }
     bool Cleanup();
