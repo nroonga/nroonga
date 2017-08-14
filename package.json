@@ -3,7 +3,12 @@
   "description": "A library for building groonga powered nodes",
   "version": "0.2.5",
   "author": "Yoji Shidara <dara@shidara.net>",
-  "keywords": ["groonga", "fulltext", "search", "database"],
+  "keywords": [
+    "groonga",
+    "fulltext",
+    "search",
+    "database"
+  ],
   "homepage": "http://nroonga.github.com/",
   "repository": {
     "type": "git",
