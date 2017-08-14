@@ -24,6 +24,6 @@
   },
   "main": "./lib/nroonga",
   "engines": {
-    "node": ">= 0.8.22"
+    "node": ">= 4.0.0"
   }
 }
