@@ -16,7 +16,7 @@ temporaryDatabase = (callback) ->
         throw err if err?
         re = RegExp('^' + databaseName)
         for file in files when file.match(re)
-          fs.unlink(tempdir + '/' + file)
+          fs.unlinkSync(tempdir + '/' + file)
 
 withTestDatabase = (callback) ->
   temporaryDatabase (db) ->
