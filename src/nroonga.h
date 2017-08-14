@@ -1,5 +1,6 @@
 #ifndef NROONGA_GROONGA_H
 #define NROONGA_GROONGA_H
+#include <uv.h>
 #include <node.h>
 #include <node_object_wrap.h>
 #include <v8.h>
