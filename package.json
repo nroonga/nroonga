@@ -24,7 +24,7 @@
   },
   "dependencies": {},
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter list -r should --compilers coffee:coffee-script",
+    "test": "mocha --reporter list -r should --compilers coffee:coffee-script/register",
     "install": "node-gyp rebuild"
   },
   "main": "./lib/nroonga",
