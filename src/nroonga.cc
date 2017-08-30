@@ -40,7 +40,7 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
   grn_ctx_init(ctx, 0);
   if (args[0]->IsUndefined()) {
     db->database = grn_db_create(ctx, NULL, NULL);
-  } else if(args[0]->IsString()) {
+  } else if (args[0]->IsString()) {
     String::Utf8Value path(args[0]->ToString());
     if (args.Length() > 1 && args[1]->IsTrue()) {
       db->database = grn_db_open(ctx, *path);
