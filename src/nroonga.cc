@@ -164,7 +164,6 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
   baton->request.data = baton;
   baton->callback.Reset(isolate, callback);
 
-
   String::Utf8Value command(args[0]->ToString());
   baton->database = db->database;
 
