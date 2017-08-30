@@ -3,7 +3,12 @@
   "description": "A library for building groonga powered nodes",
   "version": "0.2.5",
   "author": "Yoji Shidara <dara@shidara.net>",
-  "keywords": ["groonga", "fulltext", "search", "database"],
+  "keywords": [
+    "groonga",
+    "fulltext",
+    "search",
+    "database"
+  ],
   "homepage": "http://nroonga.github.com/",
   "repository": {
     "type": "git",
@@ -17,15 +22,13 @@
     "mocha": "",
     "should": ""
   },
-  "dependencies": {
-    "msgpack": ""
-  },
+  "dependencies": {},
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter list -r should --compilers coffee:coffee-script",
+    "test": "mocha --reporter list -r should --compilers coffee:coffee-script/register",
     "install": "node-gyp rebuild"
   },
   "main": "./lib/nroonga",
   "engines": {
-    "node": ">= 0.8.22"
+    "node": ">= 4.0.0"
   }
 }

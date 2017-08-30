@@ -1,6 +1,16 @@
 language: node_js
 node_js:
- - '0.8'
- - '0.10'
+ - '4'
+ - '6'
+ - '8'
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+sudo: required
 before_install:
  - curl --silent --location https://github.com/groonga/groonga/raw/master/data/travis/setup.sh | sh

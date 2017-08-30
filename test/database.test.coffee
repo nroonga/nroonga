@@ -16,7 +16,7 @@ temporaryDatabase = (callback) ->
         throw err if err?
         re = RegExp('^' + databaseName)
         for file in files when file.match(re)
-          fs.unlink(tempdir + '/' + file)
+          fs.unlinkSync(tempdir + '/' + file)
 
 withTestDatabase = (callback) ->
   temporaryDatabase (db) ->
@@ -145,12 +145,10 @@ describe 'database with data stored', ->
     withTestDatabase (db) ->
       result = db.commandSync('dump', tables: 'Site')
       expected_dump = 'table_create Site TABLE_HASH_KEY ShortText\n' +
-                      'column_create Site title COLUMN_SCALAR ShortText\n' +
+                      'column_create Site title COLUMN_SCALAR ShortText\n\n' +
                       'table_create Terms TABLE_PAT_KEY ' +
                         'ShortText --default_tokenizer TokenBigram ' +
-                        '--normalizer NormalizerAuto\n' +
-                      'column_create Terms entry_title ' +
-                        'COLUMN_INDEX|WITH_POSITION Site title\n' +
+                        '--normalizer NormalizerAuto\n\n' +
                       'load --table Site\n' +
                       '[\n' +
                       '["_key","title"],\n' +
@@ -160,6 +158,9 @@ describe 'database with data stored', ->
                         'Ruby with groonga - Ranguba"],\n' +
                       '["http://mroonga.github.com/","Groonga storage ' +
                         'engine - Fast fulltext search on MySQL"]\n' +
-                      ']'
+                      ']\n\n' +
+                      'column_create Terms entry_title ' +
+                        'COLUMN_INDEX|WITH_POSITION Site title'
+
       result.should.equal(expected_dump)
       done()
