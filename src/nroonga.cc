@@ -90,11 +90,10 @@ void Database::Close(const FunctionCallbackInfo<Value>& args) {
   if (db->Cleanup()) {
     args.GetReturnValue().Set(True(isolate));
     return;
-  } else {
-    isolate->ThrowException(
-        Exception::Error(
-            String::NewFromUtf8(isolate, "Failed to close the database")));
   }
+  isolate->ThrowException(
+      Exception::Error(
+          String::NewFromUtf8(isolate, "Failed to close the database")));
 }
 
 void Database::CommandWork(uv_work_t* req) {
@@ -160,9 +159,8 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
           Exception::TypeError(String::NewFromUtf8(
               isolate, "Second argument must be a callback function")));
       return;
-    } else {
-      callback = Local<Function>::Cast(args[1]);
     }
+    callback = Local<Function>::Cast(args[1]);
   }
 
   if (db->closed) {
