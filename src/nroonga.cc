@@ -131,13 +131,16 @@ void Database::CommandAfter(uv_work_t* req) {
   Baton* baton = static_cast<Baton*>(req->data);
   Handle<Value> argv[2];
   if (baton->error) {
-    argv[0] = Exception::Error(String::NewFromUtf8(isolate, baton->context.errbuf));
+    argv[0] = Exception::Error(String::NewFromUtf8(isolate,
+                                                   baton->context.errbuf));
     argv[1] = Null(isolate);
   } else {
     argv[0] = Null(isolate);
-    argv[1] = Buffer::New(isolate, baton->result, baton->result_length).ToLocalChecked();
+    argv[1] = Buffer::New(isolate, baton->result, baton->result_length)
+        .ToLocalChecked();
   }
-  Local<Function>::New(isolate, baton->callback)->Call(isolate->GetCurrentContext()->Global(), 2, argv);
+  Local<Function>::New(isolate, baton->callback)
+      ->Call(isolate->GetCurrentContext()->Global(), 2, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
 }
@@ -233,7 +236,8 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
     return;
   }
 
-  args.GetReturnValue().Set(Buffer::New(isolate, result, result_length).ToLocalChecked()->ToString());
+  args.GetReturnValue().Set(
+      Buffer::New(isolate, result, result_length).ToLocalChecked()->ToString());
 }
 
 void InitNroonga(Handle<Object> target) {
