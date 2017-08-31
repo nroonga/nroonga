@@ -94,7 +94,6 @@ void Database::Close(const FunctionCallbackInfo<Value>& args) {
     isolate->ThrowException(
         Exception::Error(
             String::NewFromUtf8(isolate, "Failed to close the database")));
-    return;
   }
 }
 
@@ -122,7 +121,6 @@ void Database::CommandWork(uv_work_t* req) {
     return;
   }
   baton->error = 0;
-  return;
 }
 
 void Database::CommandAfter(uv_work_t* req) {
