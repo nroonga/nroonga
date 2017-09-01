@@ -1,6 +1,6 @@
 ## nroonga
 
-[![Build Status](https://secure.travis-ci.org/nroonga/nroonga.png?branch=master)](http://travis-ci.org/nroonga/nroonga)
+[![Build Status](https://secure.travis-ci.org/nroonga/nroonga.svg?branch=master)](http://travis-ci.org/nroonga/nroonga)
 
 [nroonga](http://nroonga.github.com) is a library for building groonga powered nodes.
 You can write your custom full-text search backend on the top of [node.js](http://nodejs.org) and [groonga][].
@@ -51,10 +51,10 @@ A CLI example (like groonga stand-alone mode):
 
     var nroonga = require('nroonga');
     var db = new nroonga.Database('database');
-    
+
     // Synchronous
     console.log(db.commandSync('status'));
-    
+
     // Asynchronous
     db.command('status', function(error, data) {
       console.log(data);
