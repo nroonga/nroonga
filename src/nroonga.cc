@@ -28,9 +28,9 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope(isolate);
 
   if (!args.IsConstructCall()) {
-    isolate->ThrowException(Exception::TypeError(
-      String::NewFromUtf8(isolate, "Use the new operator to create new Database objects"))
-    );
+    isolate->ThrowException(
+        Exception::TypeError(String::NewFromUtf8(
+            isolate, "Use the new operator to create new Database objects")));
     return;
   }
 
@@ -40,7 +40,7 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
   grn_ctx_init(ctx, 0);
   if (args[0]->IsUndefined()) {
     db->database = grn_db_create(ctx, NULL, NULL);
-  } else if(args[0]->IsString()) {
+  } else if (args[0]->IsString()) {
     String::Utf8Value path(args[0]->ToString());
     if (args.Length() > 1 && args[1]->IsTrue()) {
       db->database = grn_db_open(ctx, *path);
@@ -48,11 +48,13 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
       GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
     }
     if (ctx->rc != GRN_SUCCESS) {
-      isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
+      isolate->ThrowException(
+          Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
       return;
     }
   } else {
-    isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    isolate->ThrowException(
+        Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
     return;
   }
 
@@ -79,17 +81,19 @@ void Database::Close(const FunctionCallbackInfo<Value>& args) {
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
 
   if (db->closed) {
-    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Database already closed")));
+    isolate->ThrowException(
+        Exception::Error(
+            String::NewFromUtf8(isolate, "Database already closed")));
     return;
   }
 
   if (db->Cleanup()) {
     args.GetReturnValue().Set(True(isolate));
     return;
-  } else {
-    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Failed to close the database")));
-    return;
   }
+  isolate->ThrowException(
+      Exception::Error(
+          String::NewFromUtf8(isolate, "Failed to close the database")));
 }
 
 void Database::CommandWork(uv_work_t* req) {
@@ -116,7 +120,6 @@ void Database::CommandWork(uv_work_t* req) {
     return;
   }
   baton->error = 0;
-  return;
 }
 
 void Database::CommandAfter(uv_work_t* req) {
@@ -125,13 +128,16 @@ void Database::CommandAfter(uv_work_t* req) {
   Baton* baton = static_cast<Baton*>(req->data);
   Handle<Value> argv[2];
   if (baton->error) {
-    argv[0] = Exception::Error(String::NewFromUtf8(isolate, baton->context.errbuf));
+    argv[0] = Exception::Error(String::NewFromUtf8(isolate,
+                                                   baton->context.errbuf));
     argv[1] = Null(isolate);
   } else {
     argv[0] = Null(isolate);
-    argv[1] = Buffer::New(isolate, baton->result, baton->result_length).ToLocalChecked();
+    argv[1] = Buffer::New(isolate, baton->result, baton->result_length)
+        .ToLocalChecked();
   }
-  Local<Function>::New(isolate, baton->callback)->Call(isolate->GetCurrentContext()->Global(), 2, argv);
+  Local<Function>::New(isolate, baton->callback)
+      ->Call(isolate->GetCurrentContext()->Global(), 2, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
 }
@@ -141,29 +147,32 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope(isolate);
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
-    isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    isolate->ThrowException(
+        Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
     return;
   }
 
   Local<Function> callback;
   if (args.Length() >= 2) {
     if (!args[1]->IsFunction()) {
-      isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Second argument must be a callback function")));
+      isolate->ThrowException(
+          Exception::TypeError(String::NewFromUtf8(
+              isolate, "Second argument must be a callback function")));
       return;
-    } else {
-      callback = Local<Function>::Cast(args[1]);
     }
+    callback = Local<Function>::Cast(args[1]);
   }
 
   if (db->closed) {
-    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Database already closed")));
+    isolate->ThrowException(
+        Exception::Error(
+            String::NewFromUtf8(isolate, "Database already closed")));
     return;
   }
 
   Baton* baton = new Baton();
   baton->request.data = baton;
   baton->callback.Reset(isolate, callback);
-
 
   String::Utf8Value command(args[0]->ToString());
   baton->database = db->database;
@@ -184,7 +193,8 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
 
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
-    isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    isolate->ThrowException(
+        Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
     return;
   }
 
@@ -196,26 +206,34 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
   String::Utf8Value command(args[0]->ToString());
 
   if (db->closed) {
-    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "Database already closed")));
+    isolate->ThrowException(
+        Exception::Error(
+            String::NewFromUtf8(isolate, "Database already closed")));
     return;
   }
 
   rc = grn_ctx_send(ctx, *command, command.length(), 0);
   if (rc < 0) {
-    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "grn_ctx_send returned error")));
+    isolate->ThrowException(
+        Exception::Error(
+            String::NewFromUtf8(isolate, "grn_ctx_send returned error")));
     return;
   }
   if (ctx->rc != GRN_SUCCESS) {
-    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
+    isolate->ThrowException(
+        Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
     return;
   }
   grn_ctx_recv(ctx, &result, &result_length, &flags);
   if (ctx->rc < 0) {
-    isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, "grn_ctx_recv returned error")));
+    isolate->ThrowException(
+        Exception::Error(
+            String::NewFromUtf8(isolate, "grn_ctx_recv returned error")));
     return;
   }
 
-  args.GetReturnValue().Set(Buffer::New(isolate, result, result_length).ToLocalChecked()->ToString());
+  args.GetReturnValue().Set(
+      Buffer::New(isolate, result, result_length).ToLocalChecked()->ToString());
 }
 
 void InitNroonga(Handle<Object> target) {
