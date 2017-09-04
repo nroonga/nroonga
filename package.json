@@ -22,7 +22,9 @@
     "mocha": "",
     "should": ""
   },
-  "dependencies": {},
+  "dependencies": {
+    "nan": "^2.7.0"
+  },
   "scripts": {
     "test": "mocha --reporter list -r should --compilers coffee:coffee-script/register",
     "install": "node-gyp rebuild"
