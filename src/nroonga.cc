@@ -29,9 +29,7 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope(isolate);
 
   if (!args.IsConstructCall()) {
-    isolate->ThrowException(
-        Exception::TypeError(String::NewFromUtf8(
-            isolate, "Use the new operator to create new Database objects")));
+    Nan::ThrowTypeError("Use the new operator to create new Database objects");
     return;
   }
 
@@ -49,13 +47,11 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
       GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
     }
     if (ctx->rc != GRN_SUCCESS) {
-      isolate->ThrowException(
-          Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
+      Nan::ThrowTypeError(ctx->errbuf);
       return;
     }
   } else {
-    isolate->ThrowException(
-        Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    Nan::ThrowTypeError("Bad parameter");
     return;
   }
 
@@ -82,9 +78,7 @@ void Database::Close(const FunctionCallbackInfo<Value>& args) {
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
 
   if (db->closed) {
-    isolate->ThrowException(
-        Exception::Error(
-            String::NewFromUtf8(isolate, "Database already closed")));
+    Nan::ThrowTypeError("Database already closed");
     return;
   }
 
@@ -92,9 +86,7 @@ void Database::Close(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(True(isolate));
     return;
   }
-  isolate->ThrowException(
-      Exception::Error(
-          String::NewFromUtf8(isolate, "Failed to close the database")));
+  Nan::ThrowTypeError("Failed to close the database");
 }
 
 void Database::CommandWork(uv_work_t* req) {
@@ -148,26 +140,21 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope(isolate);
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
-    isolate->ThrowException(
-        Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    Nan::ThrowTypeError("Bad parameter");
     return;
   }
 
   Local<Function> callback;
   if (args.Length() >= 2) {
     if (!args[1]->IsFunction()) {
-      isolate->ThrowException(
-          Exception::TypeError(String::NewFromUtf8(
-              isolate, "Second argument must be a callback function")));
+      Nan::ThrowTypeError("Second argument must be a callback function");
       return;
     }
     callback = Local<Function>::Cast(args[1]);
   }
 
   if (db->closed) {
-    isolate->ThrowException(
-        Exception::Error(
-            String::NewFromUtf8(isolate, "Database already closed")));
+    Nan::ThrowTypeError("Database already closed");
     return;
   }
 
@@ -194,8 +181,7 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
 
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
-    isolate->ThrowException(
-        Exception::TypeError(String::NewFromUtf8(isolate, "Bad parameter")));
+    Nan::ThrowTypeError("Bad parameter");
     return;
   }
 
@@ -207,29 +193,22 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
   String::Utf8Value command(args[0]->ToString());
 
   if (db->closed) {
-    isolate->ThrowException(
-        Exception::Error(
-            String::NewFromUtf8(isolate, "Database already closed")));
+    Nan::ThrowTypeError("Database already closed");
     return;
   }
 
   rc = grn_ctx_send(ctx, *command, command.length(), 0);
   if (rc < 0) {
-    isolate->ThrowException(
-        Exception::Error(
-            String::NewFromUtf8(isolate, "grn_ctx_send returned error")));
+    Nan::ThrowTypeError("grn_ctx_send returned error");
     return;
   }
   if (ctx->rc != GRN_SUCCESS) {
-    isolate->ThrowException(
-        Exception::Error(String::NewFromUtf8(isolate, ctx->errbuf)));
+    Nan::ThrowTypeError(ctx->errbuf);
     return;
   }
   grn_ctx_recv(ctx, &result, &result_length, &flags);
   if (ctx->rc < 0) {
-    isolate->ThrowException(
-        Exception::Error(
-            String::NewFromUtf8(isolate, "grn_ctx_recv returned error")));
+    Nan::ThrowTypeError("grn_ctx_recv returned error");
     return;
   }
 
