@@ -49,16 +49,18 @@ A CLI example (like groonga stand-alone mode):
 
 ### Examples
 
-    var nroonga = require('nroonga');
-    var db = new nroonga.Database('database');
+```javascript
+var nroonga = require('nroonga');
+var db = new nroonga.Database('database');
 
-    // Synchronous
-    console.log(db.commandSync('status'));
+// Synchronous
+console.log(db.commandSync('status'));
 
-    // Asynchronous
-    db.command('status', function(error, data) {
-      console.log(data);
-    });
+// Asynchronous
+db.command('status', function(error, data) {
+  console.log(data);
+});
+```
 
 ### new nroonga.Database([[path], openOnly])
 
