@@ -1,4 +1,5 @@
 #include <node_buffer.h>
+#include <nan.h>
 #include "nroonga.h"
 
 namespace nroonga {
