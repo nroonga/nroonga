@@ -123,7 +123,7 @@ void Database::CommandAfter(uv_work_t* req) {
     argv[1] = Nan::NewBuffer(baton->result, baton->result_length)
         .ToLocalChecked();
   }
-  Local<Function>::New(isolate, baton->callback)
+  Nan::New<Function>(baton->callback)
       ->Call(Nan::GetCurrentContext()->Global(), 2, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
