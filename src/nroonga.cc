@@ -25,9 +25,6 @@ void Database::Initialize(Handle<Object> exports) {
 }
 
 void Database::New(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
-
   if (!args.IsConstructCall()) {
     Nan::ThrowTypeError("Use the new operator to create new Database objects");
     return;
@@ -73,8 +70,6 @@ bool Database::Cleanup() {
 }
 
 void Database::Close(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
 
   if (db->closed) {
@@ -175,9 +170,6 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
 }
 
 void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
-
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
