@@ -111,8 +111,8 @@ void Database::CommandWork(uv_work_t* req) {
 }
 
 void Database::CommandAfter(uv_work_t* req) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
+  Nan::HandleScope scope;
+
   Baton* baton = static_cast<Baton*>(req->data);
   Handle<Value> argv[2];
   if (baton->error) {
