@@ -130,8 +130,6 @@ void Database::CommandAfter(uv_work_t* req) {
 }
 
 void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
   Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
   if (args.Length() < 1 || !args[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
