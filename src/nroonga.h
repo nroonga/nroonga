@@ -23,7 +23,7 @@ class Database : public node::ObjectWrap {
 
     struct Baton {
       uv_work_t request;
-      Persistent<Function> callback;
+      Nan::Persistent<Function> callback;
       int error;
       char *result;
       unsigned int result_length;
@@ -34,10 +34,10 @@ class Database : public node::ObjectWrap {
     };
 
   protected:
-    static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
-    static void CommandString(const v8::FunctionCallbackInfo<v8::Value>& args);
-    static void CommandSyncString(const v8::FunctionCallbackInfo<v8::Value>& args);
-    static void Close(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static void New(const Nan::FunctionCallbackInfo<Value>& info);
+    static void CommandString(const Nan::FunctionCallbackInfo<Value>& info);
+    static void CommandSyncString(const Nan::FunctionCallbackInfo<Value>& info);
+    static void Close(const Nan::FunctionCallbackInfo<Value>& info);
     Database() : ObjectWrap() {
     }
     bool Cleanup();

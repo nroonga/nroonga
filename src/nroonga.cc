@@ -1,4 +1,3 @@
-#include <node_buffer.h>
 #include <nan.h>
 #include "nroonga.h"
 
@@ -6,29 +5,25 @@ namespace nroonga {
 
 using namespace v8;
 
-static Persistent<Function> groonga_context_constructor;
+Nan::Persistent<Function> groonga_context_constructor;
 
-void Database::Initialize(Handle<Object> exports) {
-  Isolate* isolate = Isolate::GetCurrent();
+void Database::Initialize(Local<Object> exports) {
+  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(isolate, New);
+  tpl->SetClassName(Nan::New("Database").ToLocalChecked());
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-  t->SetClassName(String::NewFromUtf8(isolate, "Database"));
-  t->InstanceTemplate()->SetInternalFieldCount(1);
+  Nan::SetPrototypeMethod(tpl, "commandString", Database::CommandString);
+  Nan::SetPrototypeMethod(tpl, "commandSyncString", Database::CommandSyncString);
+  Nan::SetPrototypeMethod(tpl, "close", Database::Close);
 
-  NODE_SET_PROTOTYPE_METHOD(t, "commandString", Database::CommandString);
-  NODE_SET_PROTOTYPE_METHOD(t, "commandSyncString", Database::CommandSyncString);
-  NODE_SET_PROTOTYPE_METHOD(t, "close", Database::Close);
-
-  groonga_context_constructor.Reset(isolate, t->GetFunction());
-  exports->Set(String::NewFromUtf8(isolate, "Database"), t->GetFunction());
+  groonga_context_constructor.Reset(tpl->GetFunction());
+  exports->Set(Nan::New("Database").ToLocalChecked(),
+               tpl->GetFunction());
 }
 
-void Database::New(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
-
-  if (!args.IsConstructCall()) {
+void Database::New(const Nan::FunctionCallbackInfo<Value>& info) {
+  if (!info.IsConstructCall()) {
     Nan::ThrowTypeError("Use the new operator to create new Database objects");
     return;
   }
@@ -37,11 +32,11 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
   db->closed = true;
   grn_ctx *ctx = &db->context;
   grn_ctx_init(ctx, 0);
-  if (args[0]->IsUndefined()) {
+  if (info[0]->IsUndefined()) {
     db->database = grn_db_create(ctx, NULL, NULL);
-  } else if (args[0]->IsString()) {
-    String::Utf8Value path(args[0]->ToString());
-    if (args.Length() > 1 && args[1]->IsTrue()) {
+  } else if (info[0]->IsString()) {
+    String::Utf8Value path(info[0]->ToString());
+    if (info.Length() > 1 && info[1]->IsTrue()) {
       db->database = grn_db_open(ctx, *path);
     } else {
       GRN_DB_OPEN_OR_CREATE(ctx, *path, NULL, db->database);
@@ -56,8 +51,8 @@ void Database::New(const FunctionCallbackInfo<Value>& args) {
   }
 
   db->closed = false;
-  db->Wrap(args.Holder());
-  args.GetReturnValue().Set(args.This());
+  db->Wrap(info.Holder());
+  info.GetReturnValue().Set(info.This());
 }
 
 bool Database::Cleanup() {
@@ -72,10 +67,8 @@ bool Database::Cleanup() {
   return true;
 }
 
-void Database::Close(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
-  Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
+void Database::Close(const Nan::FunctionCallbackInfo<Value>& info) {
+  Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
@@ -83,7 +76,7 @@ void Database::Close(const FunctionCallbackInfo<Value>& args) {
   }
 
   if (db->Cleanup()) {
-    args.GetReturnValue().Set(True(isolate));
+    info.GetReturnValue().Set(Nan::True());
     return;
   }
   Nan::ThrowTypeError("Failed to close the database");
@@ -116,41 +109,38 @@ void Database::CommandWork(uv_work_t* req) {
 }
 
 void Database::CommandAfter(uv_work_t* req) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
+  Nan::HandleScope scope;
+
   Baton* baton = static_cast<Baton*>(req->data);
   Handle<Value> argv[2];
   if (baton->error) {
-    argv[0] = Exception::Error(String::NewFromUtf8(isolate,
-                                                   baton->context.errbuf));
-    argv[1] = Null(isolate);
+    argv[0] = Exception::Error(Nan::New(baton->context.errbuf).ToLocalChecked());
+    argv[1] = Nan::Null();
   } else {
-    argv[0] = Null(isolate);
-    argv[1] = Buffer::New(isolate, baton->result, baton->result_length)
+    argv[0] = Nan::Null();
+    argv[1] = Nan::NewBuffer(baton->result, baton->result_length)
         .ToLocalChecked();
   }
-  Local<Function>::New(isolate, baton->callback)
-      ->Call(isolate->GetCurrentContext()->Global(), 2, argv);
+  Nan::New<Function>(baton->callback)
+      ->Call(Nan::GetCurrentContext()->Global(), 2, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
 }
 
-void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
-  Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
-  if (args.Length() < 1 || !args[0]->IsString()) {
+void Database::CommandString(const Nan::FunctionCallbackInfo<Value>& info) {
+  Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
+  if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
     return;
   }
 
   Local<Function> callback;
-  if (args.Length() >= 2) {
-    if (!args[1]->IsFunction()) {
+  if (info.Length() >= 2) {
+    if (!info[1]->IsFunction()) {
       Nan::ThrowTypeError("Second argument must be a callback function");
       return;
     }
-    callback = Local<Function>::Cast(args[1]);
+    callback = Local<Function>::Cast(info[1]);
   }
 
   if (db->closed) {
@@ -160,9 +150,9 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
 
   Baton* baton = new Baton();
   baton->request.data = baton;
-  baton->callback.Reset(isolate, callback);
+  baton->callback.Reset(callback);
 
-  String::Utf8Value command(args[0]->ToString());
+  String::Utf8Value command(info[0]->ToString());
   baton->database = db->database;
 
   baton->command = std::string(*command, command.length());
@@ -172,15 +162,12 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
       (uv_after_work_cb)CommandAfter
       );
 
-  args.GetReturnValue().Set(Undefined(isolate));
+  info.GetReturnValue().Set(Nan::Undefined());
 }
 
-void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = Isolate::GetCurrent();
-  HandleScope scope(isolate);
-
-  Database *db = ObjectWrap::Unwrap<Database>(args.Holder());
-  if (args.Length() < 1 || !args[0]->IsString()) {
+void Database::CommandSyncString(const Nan::FunctionCallbackInfo<Value>& info) {
+  Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
+  if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
     return;
   }
@@ -190,7 +177,7 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
   char *result;
   unsigned int result_length;
   int flags;
-  String::Utf8Value command(args[0]->ToString());
+  String::Utf8Value command(info[0]->ToString());
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
@@ -212,13 +199,13 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
     return;
   }
 
-  args.GetReturnValue().Set(
-      Buffer::New(isolate, result, result_length).ToLocalChecked()->ToString());
+  info.GetReturnValue().Set(
+      Nan::NewBuffer(result, result_length).ToLocalChecked()->ToString());
 }
 
-void InitNroonga(Handle<Object> target) {
+void InitNroonga(Local<Object> exports) {
   grn_init();
-  Database::Initialize(target);
+  Database::Initialize(exports);
 }
 
 } // namespace nroonga
