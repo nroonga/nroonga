@@ -126,7 +126,7 @@ void Database::CommandAfter(uv_work_t* req) {
     argv[1] = Nan::Null();
   } else {
     argv[0] = Nan::Null();
-    argv[1] = Buffer::New(isolate, baton->result, baton->result_length)
+    argv[1] = Nan::NewBuffer(baton->result, baton->result_length)
         .ToLocalChecked();
   }
   Local<Function>::New(isolate, baton->callback)
@@ -213,7 +213,7 @@ void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
   }
 
   args.GetReturnValue().Set(
-      Buffer::New(isolate, result, result_length).ToLocalChecked()->ToString());
+      Nan::NewBuffer(result, result_length).ToLocalChecked()->ToString());
 }
 
 void InitNroonga(Handle<Object> target) {
