@@ -129,7 +129,7 @@ void Database::CommandAfter(uv_work_t* req) {
         .ToLocalChecked();
   }
   Local<Function>::New(isolate, baton->callback)
-      ->Call(isolate->GetCurrentContext()->Global(), 2, argv);
+      ->Call(Nan::GetCurrentContext()->Global(), 2, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
 }
