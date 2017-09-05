@@ -121,8 +121,7 @@ void Database::CommandAfter(uv_work_t* req) {
   Baton* baton = static_cast<Baton*>(req->data);
   Handle<Value> argv[2];
   if (baton->error) {
-    argv[0] = Exception::Error(String::NewFromUtf8(isolate,
-                                                   baton->context.errbuf));
+    argv[0] = Exception::Error(Nan::New(baton->context.errbuf).ToLocalChecked());
     argv[1] = Nan::Null();
   } else {
     argv[0] = Nan::Null();
