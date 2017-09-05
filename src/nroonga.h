@@ -23,7 +23,7 @@ class Database : public node::ObjectWrap {
 
     struct Baton {
       uv_work_t request;
-      Persistent<Function> callback;
+      Nan::Persistent<Function> callback;
       int error;
       char *result;
       unsigned int result_length;

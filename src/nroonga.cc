@@ -6,7 +6,7 @@ namespace nroonga {
 
 using namespace v8;
 
-static Persistent<Function> groonga_context_constructor;
+Nan::Persistent<Function> groonga_context_constructor;
 
 void Database::Initialize(Handle<Object> exports) {
   Isolate* isolate = Isolate::GetCurrent();
@@ -20,7 +20,7 @@ void Database::Initialize(Handle<Object> exports) {
   NODE_SET_PROTOTYPE_METHOD(t, "commandSyncString", Database::CommandSyncString);
   NODE_SET_PROTOTYPE_METHOD(t, "close", Database::Close);
 
-  groonga_context_constructor.Reset(isolate, t->GetFunction());
+  groonga_context_constructor.Reset(t->GetFunction());
   exports->Set(String::NewFromUtf8(isolate, "Database"), t->GetFunction());
 }
 
@@ -154,7 +154,7 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
 
   Baton* baton = new Baton();
   baton->request.data = baton;
-  baton->callback.Reset(isolate, callback);
+  baton->callback.Reset(callback);
 
   String::Utf8Value command(args[0]->ToString());
   baton->database = db->database;
