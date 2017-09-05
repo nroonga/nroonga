@@ -83,7 +83,7 @@ void Database::Close(const FunctionCallbackInfo<Value>& args) {
   }
 
   if (db->Cleanup()) {
-    args.GetReturnValue().Set(True(isolate));
+    args.GetReturnValue().Set(Nan::True());
     return;
   }
   Nan::ThrowTypeError("Failed to close the database");
@@ -123,9 +123,9 @@ void Database::CommandAfter(uv_work_t* req) {
   if (baton->error) {
     argv[0] = Exception::Error(String::NewFromUtf8(isolate,
                                                    baton->context.errbuf));
-    argv[1] = Null(isolate);
+    argv[1] = Nan::Null();
   } else {
-    argv[0] = Null(isolate);
+    argv[0] = Nan::Null();
     argv[1] = Buffer::New(isolate, baton->result, baton->result_length)
         .ToLocalChecked();
   }
@@ -172,7 +172,7 @@ void Database::CommandString(const FunctionCallbackInfo<Value>& args) {
       (uv_after_work_cb)CommandAfter
       );
 
-  args.GetReturnValue().Set(Undefined(isolate));
+  args.GetReturnValue().Set(Nan::Undefined());
 }
 
 void Database::CommandSyncString(const FunctionCallbackInfo<Value>& args) {
