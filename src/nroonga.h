@@ -1,5 +1,6 @@
 #ifndef NROONGA_GROONGA_H
 #define NROONGA_GROONGA_H
+#include <nan.h>
 #include <uv.h>
 #include <node.h>
 #include <node_object_wrap.h>
@@ -13,7 +14,7 @@ using namespace node;
 
 namespace nroonga {
 
-class Database : public node::ObjectWrap {
+class Database : public Nan::ObjectWrap {
   grn_ctx context;
   grn_obj *database;
   bool closed;
