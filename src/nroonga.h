@@ -2,8 +2,6 @@
 #define NROONGA_GROONGA_H
 #include <nan.h>
 #include <uv.h>
-#include <node.h>
-#include <node_object_wrap.h>
 #include <v8.h>
 #include <groonga.h>
 
