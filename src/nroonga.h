@@ -1,10 +1,7 @@
 #ifndef NROONGA_GROONGA_H
 #define NROONGA_GROONGA_H
 #include <nan.h>
-#include <uv.h>
 #include <groonga.h>
-
-#include <string>
 
 namespace nroonga {
 
