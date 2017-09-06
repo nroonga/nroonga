@@ -8,7 +8,6 @@
 #include <string>
 
 using namespace v8;
-using namespace node;
 
 namespace nroonga {
 
