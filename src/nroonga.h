@@ -2,12 +2,9 @@
 #define NROONGA_GROONGA_H
 #include <nan.h>
 #include <uv.h>
-#include <v8.h>
 #include <groonga.h>
 
 #include <string>
-
-using namespace v8;
 
 namespace nroonga {
 
@@ -21,7 +18,7 @@ class Database : public Nan::ObjectWrap {
 
     struct Baton {
       uv_work_t request;
-      Nan::Persistent<Function> callback;
+      Nan::Persistent<v8::Function> callback;
       int error;
       char *result;
       unsigned int result_length;
@@ -32,10 +29,10 @@ class Database : public Nan::ObjectWrap {
     };
 
   protected:
-    static void New(const Nan::FunctionCallbackInfo<Value>& info);
-    static void CommandString(const Nan::FunctionCallbackInfo<Value>& info);
-    static void CommandSyncString(const Nan::FunctionCallbackInfo<Value>& info);
-    static void Close(const Nan::FunctionCallbackInfo<Value>& info);
+    static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
+    static void CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info);
+    static void CommandSyncString(const Nan::FunctionCallbackInfo<v8::Value>& info);
+    static void Close(const Nan::FunctionCallbackInfo<v8::Value>& info);
     Database() : ObjectWrap() {
     }
     bool Cleanup();
