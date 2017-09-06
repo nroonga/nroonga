@@ -1,4 +1,3 @@
-#include <nan.h>
 #include "nroonga.h"
 
 namespace nroonga {
