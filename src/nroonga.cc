@@ -155,10 +155,9 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
   baton->command = std::string(*command, command.length());
   uv_queue_work(uv_default_loop(),
-      &baton->request,
-      CommandWork,
-      (uv_after_work_cb)CommandAfter
-      );
+                &baton->request,
+                CommandWork,
+                (uv_after_work_cb)CommandAfter);
 
   info.GetReturnValue().Set(Nan::Undefined());
 }
