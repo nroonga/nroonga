@@ -138,7 +138,7 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
       Nan::ThrowTypeError("Second argument must be a callback function");
       return;
     }
-    callback = v8::Local<v8::Function>::Cast(info[1]);
+    callback = info[1].As<v8::Function>();
   }
 
   if (db->closed) {
