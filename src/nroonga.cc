@@ -109,7 +109,8 @@ void Database::CommandAfter(uv_work_t* req) {
   Nan::HandleScope scope;
 
   Baton* baton = static_cast<Baton*>(req->data);
-  v8::Handle<v8::Value> argv[2];
+  const unsigned argc = 2;
+  v8::Handle<v8::Value> argv[argc];
   if (baton->error) {
     argv[0] = v8::Exception::Error(
         Nan::New(baton->context.errbuf).ToLocalChecked());
@@ -119,9 +120,9 @@ void Database::CommandAfter(uv_work_t* req) {
     argv[1] = Nan::NewBuffer(baton->result, baton->result_length)
         .ToLocalChecked();
   }
-  Nan::Callback callback(Nan::New<v8::Function>(baton->callback));
-  callback.Call(2, argv);
-
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
+                    Nan::New<v8::Function>(baton->callback),
+                    argc, argv);
   // TODO: segmentation fault occurs. No need?
   // grn_ctx_fin(&baton->context);
   delete baton;
