@@ -122,7 +122,8 @@ void Database::CommandAfter(uv_work_t* req) {
   Nan::Callback callback(Nan::New<v8::Function>(baton->callback));
   callback.Call(2, argv);
 
-  grn_ctx_fin(&baton->context);
+  // TODO: segmentation fault occurs. No need?
+  // grn_ctx_fin(&baton->context);
   delete baton;
 }
 
