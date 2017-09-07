@@ -20,14 +20,17 @@
   "devDependencies": {
     "coffee-script": "",
     "mocha": "",
-    "should": ""
+    "should": "",
+    "standard": "^10.0.3"
   },
   "dependencies": {
     "nan": "^2.7.0"
   },
   "scripts": {
-    "test": "mocha --reporter list -r should --compilers coffee:coffee-script/register",
-    "install": "node-gyp rebuild"
+    "install": "node-gyp rebuild",
+    "lint": "standard",
+    "test": "npm run lint && npm run unit",
+    "unit": "mocha --reporter list -r should --compilers coffee:coffee-script/register"
   },
   "main": "./lib/nroonga",
   "engines": {
