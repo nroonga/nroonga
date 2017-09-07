@@ -83,23 +83,29 @@ void Database::CommandWork(uv_work_t* req) {
   Baton *baton = static_cast<Baton*>(req->data);
   int rc = -1;
   int flags;
-  grn_ctx *ctx = &baton->context;
+  grn_ctx ctx_, *ctx = &ctx_;
 
   grn_ctx_init(ctx, 0);
   grn_ctx_use(ctx, baton->database);
   rc = grn_ctx_send(ctx, baton->command.c_str(), baton->command.size(), 0);
   if (rc < 0) {
     baton->error = 1;
+    strcpy(baton->errbuf, ctx->errbuf);
+    grn_ctx_fin(ctx);
     return;
   }
   if (ctx->rc != GRN_SUCCESS) {
     baton->error = 2;
+    strcpy(baton->errbuf, ctx->errbuf);
+    grn_ctx_fin(ctx);
     return;
   }
 
   grn_ctx_recv(ctx, &baton->result, &baton->result_length, &flags);
   if (ctx->rc < 0) {
     baton->error = 3;
+    strcpy(baton->errbuf, ctx->errbuf);
+    grn_ctx_fin(ctx);
     return;
   }
   baton->error = 0;
@@ -113,7 +119,7 @@ void Database::CommandAfter(uv_work_t* req) {
   v8::Handle<v8::Value> argv[argc];
   if (baton->error) {
     argv[0] = v8::Exception::Error(
-        Nan::New(baton->context.errbuf).ToLocalChecked());
+        Nan::New(baton->errbuf).ToLocalChecked());
     argv[1] = Nan::Null();
   } else {
     argv[0] = Nan::Null();
@@ -123,8 +129,6 @@ void Database::CommandAfter(uv_work_t* req) {
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
                     Nan::New<v8::Function>(baton->callback),
                     argc, argv);
-  // TODO: segmentation fault occurs. No need?
-  // grn_ctx_fin(&baton->context);
   delete baton;
 }
 
