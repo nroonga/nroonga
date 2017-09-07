@@ -119,8 +119,9 @@ void Database::CommandAfter(uv_work_t* req) {
     argv[1] = Nan::NewBuffer(baton->result, baton->result_length)
         .ToLocalChecked();
   }
-  Nan::New<v8::Function>(baton->callback)
-      ->Call(Nan::GetCurrentContext()->Global(), 2, argv);
+  Nan::Callback callback(Nan::New<v8::Function>(baton->callback));
+  callback.Call(2, argv);
+
   grn_ctx_fin(&baton->context);
   delete baton;
 }
