@@ -2,12 +2,10 @@
 
 namespace nroonga {
 
-using namespace v8;
+Nan::Persistent<v8::Function> groonga_context_constructor;
 
-Nan::Persistent<Function> groonga_context_constructor;
-
-void Database::Initialize(Local<Object> exports) {
-  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
+void Database::Initialize(v8::Local<v8::Object> exports) {
+  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
 
   tpl->SetClassName(Nan::New("Database").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
@@ -21,7 +19,7 @@ void Database::Initialize(Local<Object> exports) {
                tpl->GetFunction());
 }
 
-void Database::New(const Nan::FunctionCallbackInfo<Value>& info) {
+void Database::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   if (!info.IsConstructCall()) {
     Nan::ThrowTypeError("Use the new operator to create new Database objects");
     return;
@@ -34,7 +32,7 @@ void Database::New(const Nan::FunctionCallbackInfo<Value>& info) {
   if (info[0]->IsUndefined()) {
     db->database = grn_db_create(ctx, NULL, NULL);
   } else if (info[0]->IsString()) {
-    String::Utf8Value path(info[0]->ToString());
+    v8::String::Utf8Value path(info[0]->ToString());
     if (info.Length() > 1 && info[1]->IsTrue()) {
       db->database = grn_db_open(ctx, *path);
     } else {
@@ -66,7 +64,7 @@ bool Database::Cleanup() {
   return true;
 }
 
-void Database::Close(const Nan::FunctionCallbackInfo<Value>& info) {
+void Database::Close(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
 
   if (db->closed) {
@@ -111,35 +109,36 @@ void Database::CommandAfter(uv_work_t* req) {
   Nan::HandleScope scope;
 
   Baton* baton = static_cast<Baton*>(req->data);
-  Handle<Value> argv[2];
+  v8::Handle<v8::Value> argv[2];
   if (baton->error) {
-    argv[0] = Exception::Error(Nan::New(baton->context.errbuf).ToLocalChecked());
+    argv[0] = v8::Exception::Error(
+        Nan::New(baton->context.errbuf).ToLocalChecked());
     argv[1] = Nan::Null();
   } else {
     argv[0] = Nan::Null();
     argv[1] = Nan::NewBuffer(baton->result, baton->result_length)
         .ToLocalChecked();
   }
-  Nan::New<Function>(baton->callback)
+  Nan::New<v8::Function>(baton->callback)
       ->Call(Nan::GetCurrentContext()->Global(), 2, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
 }
 
-void Database::CommandString(const Nan::FunctionCallbackInfo<Value>& info) {
+void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
     return;
   }
 
-  Local<Function> callback;
+  v8::Local<v8::Function> callback;
   if (info.Length() >= 2) {
     if (!info[1]->IsFunction()) {
       Nan::ThrowTypeError("Second argument must be a callback function");
       return;
     }
-    callback = Local<Function>::Cast(info[1]);
+    callback = v8::Local<v8::Function>::Cast(info[1]);
   }
 
   if (db->closed) {
@@ -151,7 +150,7 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<Value>& info) {
   baton->request.data = baton;
   baton->callback.Reset(callback);
 
-  String::Utf8Value command(info[0]->ToString());
+  v8::String::Utf8Value command(info[0]->ToString());
   baton->database = db->database;
 
   baton->command = std::string(*command, command.length());
@@ -164,7 +163,8 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<Value>& info) {
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
-void Database::CommandSyncString(const Nan::FunctionCallbackInfo<Value>& info) {
+void Database::CommandSyncString(
+    const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
@@ -176,7 +176,7 @@ void Database::CommandSyncString(const Nan::FunctionCallbackInfo<Value>& info) {
   char *result;
   unsigned int result_length;
   int flags;
-  String::Utf8Value command(info[0]->ToString());
+  v8::String::Utf8Value command(info[0]->ToString());
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
@@ -202,7 +202,7 @@ void Database::CommandSyncString(const Nan::FunctionCallbackInfo<Value>& info) {
       Nan::NewBuffer(result, result_length).ToLocalChecked()->ToString());
 }
 
-void InitNroonga(Local<Object> exports) {
+void InitNroonga(v8::Local<v8::Object> exports) {
   grn_init();
   Database::Initialize(exports);
 }
