@@ -109,18 +109,23 @@ void Database::CommandAfter(uv_work_t* req) {
   Nan::HandleScope scope;
 
   Baton* baton = static_cast<Baton*>(req->data);
-  v8::Handle<v8::Value> argv[2];
+  const unsigned argc = 2;
+  v8::Handle<v8::Value> argv[argc];
   if (baton->error) {
     argv[0] = v8::Exception::Error(
         Nan::New(baton->context.errbuf).ToLocalChecked());
     argv[1] = Nan::Null();
   } else {
+    grn_obj body;
+    GRN_TEXT_INIT(&body, GRN_OBJ_DO_SHALLOW_COPY);
+    GRN_TEXT_SET(&baton->context, &body, baton->result, baton->result_length);
     argv[0] = Nan::Null();
-    argv[1] = Nan::NewBuffer(baton->result, baton->result_length)
-        .ToLocalChecked();
+    argv[1] = Nan::New(GRN_TEXT_VALUE(&body)).ToLocalChecked();
+    GRN_OBJ_FIN(&baton->context, &body);
   }
-  Nan::New<v8::Function>(baton->callback)
-      ->Call(Nan::GetCurrentContext()->Global(), 2, argv);
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
+                    Nan::New<v8::Function>(baton->callback),
+                    argc, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
 }
@@ -138,7 +143,7 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
       Nan::ThrowTypeError("Second argument must be a callback function");
       return;
     }
-    callback = v8::Local<v8::Function>::Cast(info[1]);
+    callback = info[1].As<v8::Function>();
   }
 
   if (db->closed) {
@@ -155,10 +160,9 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
   baton->command = std::string(*command, command.length());
   uv_queue_work(uv_default_loop(),
-      &baton->request,
-      CommandWork,
-      (uv_after_work_cb)CommandAfter
-      );
+                &baton->request,
+                CommandWork,
+                (uv_after_work_cb)CommandAfter);
 
   info.GetReturnValue().Set(Nan::Undefined());
 }
