@@ -1,7 +1,9 @@
-nroonga = require('../lib/nroonga')
+'use strict'
 
-db = new nroonga.Database()
+const nroonga = require('../lib/nroonga')
 
-db.command('status', function(error, data) {
-  console.log(data);
-});
+const db = new nroonga.Database()
+
+db.command('status', (_, data) => {
+  console.log(data)
+})
