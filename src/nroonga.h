@@ -17,11 +17,11 @@ class Database : public Nan::ObjectWrap {
       uv_work_t request;
       Nan::Persistent<v8::Function> callback;
       int error;
-      char errbuf[GRN_CTX_MSGSIZE];
       char *result;
       unsigned int result_length;
 
       std::string command;
+      grn_ctx context;
       grn_obj *database;
     };
 
