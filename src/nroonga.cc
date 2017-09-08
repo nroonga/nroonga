@@ -116,12 +116,9 @@ void Database::CommandAfter(uv_work_t* req) {
         Nan::New(baton->context.errbuf).ToLocalChecked());
     argv[1] = Nan::Null();
   } else {
-    grn_obj body;
-    GRN_TEXT_INIT(&body, GRN_OBJ_DO_SHALLOW_COPY);
-    GRN_TEXT_SET(&baton->context, &body, baton->result, baton->result_length);
     argv[0] = Nan::Null();
-    argv[1] = Nan::New(GRN_TEXT_VALUE(&body)).ToLocalChecked();
-    GRN_OBJ_FIN(&baton->context, &body);
+    argv[1] = Nan::CopyBuffer(baton->result, baton->result_length)
+        .ToLocalChecked();
   }
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
                     Nan::New<v8::Function>(baton->callback),
