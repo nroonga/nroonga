@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "coffee-script": "",
+    "chai": "",
     "mocha": "",
     "should": "",
     "standard": "^10.0.3"
