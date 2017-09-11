@@ -18,10 +18,8 @@
     "url": "http://github.com/nroonga/nroonga/issues"
   },
   "devDependencies": {
-    "coffee-script": "",
     "chai": "",
     "mocha": "",
-    "should": "",
     "standard": "^10.0.3"
   },
   "dependencies": {
@@ -31,7 +29,7 @@
     "install": "node-gyp rebuild",
     "lint": "standard",
     "test": "npm run lint && npm run unit",
-    "unit": "mocha --reporter list -r should --compilers coffee:coffee-script/register"
+    "unit": "mocha --reporter list"
   },
   "main": "./lib/nroonga",
   "engines": {
