@@ -138,7 +138,7 @@ describe('empty database', () => {
 
 describe('database whose name is not string', () => {
   it('should throw an exception', () => {
-    expect(() => new nroonga.Database(1)).to.throw()
+    expect(() => new nroonga.Database(1)).to.throw('Bad parameter')
   })
 })
 
