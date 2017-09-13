@@ -92,7 +92,7 @@ describe('nroonga.Database', () => {
   describe('#command', () => {
     it('should return groonga results', done => {
       db.command('status', (error, data) => {
-        if (error) throw error
+        expect(error).to.be.null
         expect(data).to.have.property('version')
         done()
       })
