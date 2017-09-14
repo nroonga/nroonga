@@ -138,7 +138,30 @@ describe('empty database', () => {
 
 describe('database whose name is not string', () => {
   it('should throw an exception', () => {
-    expect(() => new nroonga.Database(1)).to.throw()
+    expect(() => new nroonga.Database(1)).to.throw('Bad parameter')
+  })
+})
+
+describe('groonga error', () => {
+  const db = new nroonga.Database()
+  const invalidCommand = 'table_createeee'
+  const errorMessage = `invalid command name: ${invalidCommand}`
+
+  describe('#command', () => {
+    it('should be set error object', (done) => {
+      db.command(invalidCommand, {}, (err, data) => {
+        expect(err).to.be.an.instanceof(Error)
+        expect(err.message).to.equal(errorMessage)
+        expect(data).to.be.undefined
+        done()
+      })
+    })
+  })
+
+  describe('#commandSync', () => {
+    it('should raise an exception', () => {
+      expect(() => db.commandSync(invalidCommand, {})).to.throw(errorMessage)
+    })
   })
 })
 
