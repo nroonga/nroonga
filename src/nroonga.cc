@@ -200,7 +200,7 @@ void Database::CommandSyncString(
   }
 
   info.GetReturnValue().Set(
-      Nan::NewBuffer(result, result_length).ToLocalChecked()->ToString());
+      Nan::CopyBuffer(result, result_length).ToLocalChecked()->ToString());
 }
 
 void InitNroonga(v8::Local<v8::Object> exports) {
