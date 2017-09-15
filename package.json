@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "chai": "",
+    "fs-extra": "^4.0.2",
     "mocha": "",
     "standard": "^10.0.3"
   },
