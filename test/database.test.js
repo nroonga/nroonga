@@ -1,7 +1,7 @@
 /* eslint no-unused-expressions: 0 */
 'use strict'
 
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
 const expect = require('chai').expect
 const nroonga = require('../lib/nroonga')
@@ -17,65 +17,7 @@ const testData = [{
   title: 'Groonga storage engine - Fast fulltext search on MySQL'
 }]
 
-const temporaryDatabase = callback => {
-  const tempdir = path.join('test', 'tmp')
-  fs.mkdir(tempdir, () => {
-    const databaseName = `tempdb-${process.pid}-${(new Date()).valueOf()}`
-    const db = new nroonga.Database(path.join(tempdir, databaseName))
-
-    try {
-      callback(db)
-    } finally {
-      db.close()
-      fs.readdir(tempdir, (err, files) => {
-        if (err) throw err
-        const re = RegExp('^' + databaseName)
-        files.forEach(file => {
-          if (file.match(re)) fs.unlinkSync(path.join(tempdir, file))
-        })
-      })
-    }
-  })
-}
-
-const withTestDatabase = callback => {
-  temporaryDatabase(db => {
-    db.commandSync('table_create', {
-      name: 'Site',
-      flags: 'TABLE_HASH_KEY',
-      key_type: 'ShortText'
-    })
-    db.commandSync('column_create', {
-      table: 'Site',
-      name: 'title',
-      flags: 'COLUMN_SCALAR',
-      type: 'ShortText'
-    })
-
-    db.commandSync('table_create', {
-      name: 'Terms',
-      flags: 'TABLE_PAT_KEY|KEY_NORMALIZE',
-      key_type: 'ShortText',
-      default_tokenizer: 'TokenBigram'
-    })
-    db.commandSync('column_create', {
-      table: 'Terms',
-      name: 'entry_title',
-      flags: 'COLUMN_INDEX|WITH_POSITION',
-      type: 'Site',
-      source: 'title'
-    })
-
-    db.commandSync('load', {
-      table: 'Site',
-      values: JSON.stringify(testData)
-    })
-
-    callback(db)
-  })
-}
-
-/* global beforeEach, describe, it */
+/* global beforeEach, afterEach, describe, it */
 describe('nroonga.Database', () => {
   let db = null
   beforeEach(() => {
@@ -166,52 +108,83 @@ describe('groonga error', () => {
 })
 
 describe('database with data stored', () => {
-  it('should select records', done => {
-    withTestDatabase(db => {
-      const matched = db.commandSync('select', {table: 'Site'})
-      expect(matched[0][0][0]).to.equal(3)
-      done()
+  let db = null
+  const tempdir = path.join('test', 'tmp')
+  const databaseName = `tempdb-${process.pid}-${(new Date()).valueOf()}`
+
+  beforeEach(() => {
+    if (!fs.existsSync(tempdir)) fs.mkdirSync(tempdir)
+    db = new nroonga.Database(path.join(tempdir, databaseName))
+    db.commandSync('table_create', {
+      name: 'Site',
+      flags: 'TABLE_HASH_KEY',
+      key_type: 'ShortText'
+    })
+    db.commandSync('column_create', {
+      table: 'Site',
+      name: 'title',
+      flags: 'COLUMN_SCALAR',
+      type: 'ShortText'
+    })
+
+    db.commandSync('table_create', {
+      name: 'Terms',
+      flags: 'TABLE_PAT_KEY|KEY_NORMALIZE',
+      key_type: 'ShortText',
+      default_tokenizer: 'TokenBigram'
+    })
+    db.commandSync('column_create', {
+      table: 'Terms',
+      name: 'entry_title',
+      flags: 'COLUMN_INDEX|WITH_POSITION',
+      type: 'Site',
+      source: 'title'
+    })
+
+    db.commandSync('load', {
+      table: 'Site',
+      values: JSON.stringify(testData)
     })
   })
 
-  it('should select records ignoring the null valued option', done => {
-    withTestDatabase(db => {
-      const matched = db.commandSync('select', {
-        table: 'Site',
-        query: null
-      })
-      expect(matched[0][0][0]).to.equal(3)
-      done()
-    })
+  afterEach(() => {
+    db.close()
+    fs.removeSync(tempdir)
   })
 
-  it('should search by query', done => {
-    withTestDatabase(db => {
-      const matched = db.commandSync('select', {
-        table: 'Site',
-        match_columns: 'title',
-        query: 'ruby'
-      })
-      expect(matched[0][0][0]).to.equal(1)
-      done()
-    })
+  it('should select records', () => {
+    const matched = db.commandSync('select', {table: 'Site'})
+    expect(matched[0][0][0]).to.equal(3)
   })
 
-  it('should search by query including space', done => {
-    withTestDatabase(db => {
-      const matched = db.commandSync('select', {
-        table: 'Site',
-        match_columns: 'title',
-        query: 'search ranguba'
-      })
-      expect(matched[0][0][0]).to.equal(1)
-      done()
+  it('should select records ignoring the null valued option', () => {
+    const matched = db.commandSync('select', {
+      table: 'Site',
+      query: null
     })
+    expect(matched[0][0][0]).to.equal(3)
   })
 
-  it('should dump all records', done => {
-    withTestDatabase(db => {
-      const expectedDump = `table_create Site TABLE_HASH_KEY ShortText
+  it('should search by query', () => {
+    const matched = db.commandSync('select', {
+      table: 'Site',
+      match_columns: 'title',
+      query: 'ruby'
+    })
+    expect(matched[0][0][0]).to.equal(1)
+  })
+
+  it('should search by query including space', () => {
+    const matched = db.commandSync('select', {
+      table: 'Site',
+      match_columns: 'title',
+      query: 'search ranguba'
+    })
+    expect(matched[0][0][0]).to.equal(1)
+  })
+
+  it('should dump all records', () => {
+    const expectedDump = `table_create Site TABLE_HASH_KEY ShortText
 column_create Site title COLUMN_SCALAR ShortText
 
 table_create Terms TABLE_PAT_KEY ShortText \
@@ -230,9 +203,7 @@ load --table Site
 
 column_create Terms entry_title COLUMN_INDEX|WITH_POSITION Site title`
 
-      const result = db.commandSync('dump', {tables: 'Site'})
-      expect(result).to.equal(expectedDump)
-      done()
-    })
+    const result = db.commandSync('dump', {tables: 'Site'})
+    expect(result).to.equal(expectedDump)
   })
 })
