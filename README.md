@@ -1,5 +1,6 @@
 ## nroonga
 
+[![npm version](https://badge.fury.io/js/nroonga.svg)](https://badge.fury.io/js/nroonga)
 [![Build Status](https://secure.travis-ci.org/nroonga/nroonga.svg?branch=master)](http://travis-ci.org/nroonga/nroonga)
 
 [nroonga](http://nroonga.github.com) is a library for building groonga powered nodes.
