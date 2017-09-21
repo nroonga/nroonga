@@ -114,7 +114,7 @@ void Database::CommandAfter(uv_work_t* req) {
   if (baton->error) {
     argv[0] = v8::Exception::Error(
         Nan::New(baton->context.errbuf).ToLocalChecked());
-    argv[1] = Nan::Null();
+    argv[1] = Nan::Undefined();
   } else {
     argv[0] = Nan::Null();
 
