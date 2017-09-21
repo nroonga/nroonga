@@ -117,8 +117,7 @@ void Database::CommandAfter(uv_work_t* req) {
     argv[1] = Nan::Null();
   } else {
     argv[0] = Nan::Null();
-    argv[1] = Nan::CopyBuffer(baton->result, baton->result_length)
-        .ToLocalChecked();
+    argv[1] = Nan::New(baton->result, baton->result_length).ToLocalChecked();
   }
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
                     Nan::New<v8::Function>(baton->callback),
@@ -199,8 +198,7 @@ void Database::CommandSyncString(
     return;
   }
 
-  info.GetReturnValue().Set(
-      Nan::CopyBuffer(result, result_length).ToLocalChecked()->ToString());
+  info.GetReturnValue().Set(Nan::New(result, result_length).ToLocalChecked());
 }
 
 void InitNroonga(v8::Local<v8::Object> exports) {
