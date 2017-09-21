@@ -123,14 +123,10 @@ void Database::CommandAfter(uv_work_t* req) {
     Nan::TryCatch tc;
     Nan::JSON NanJSON;
     Nan::MaybeLocal<v8::Value> parse_value = NanJSON.Parse(string);
-    if (tc.HasCaught()) {
+    if (tc.HasCaught() || parse_value.IsEmpty()) {
       argv[1] = string;
     } else {
-      if (parse_value.IsEmpty()) {
-        argv[1] = string;
-      } else {
-        argv[1] = parse_value.ToLocalChecked();
-      }
+      argv[1] = parse_value.ToLocalChecked();
     }
   }
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
@@ -218,11 +214,7 @@ void Database::CommandSyncString(
   Nan::TryCatch tc;
   Nan::JSON NanJSON;
   Nan::MaybeLocal<v8::Value> parse_value = NanJSON.Parse(string);
-  if (tc.HasCaught()) {
-    info.GetReturnValue().Set(string);
-    return;
-  }
-  if (parse_value.IsEmpty()) {
+  if (tc.HasCaught() || parse_value.IsEmpty()) {
     info.GetReturnValue().Set(string);
     return;
   }
