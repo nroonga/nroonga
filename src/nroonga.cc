@@ -117,7 +117,21 @@ void Database::CommandAfter(uv_work_t* req) {
     argv[1] = Nan::Null();
   } else {
     argv[0] = Nan::Null();
-    argv[1] = Nan::New(baton->result, baton->result_length).ToLocalChecked();
+
+    v8::Local<v8::String> string = Nan::New(
+        baton->result, baton->result_length).ToLocalChecked();
+    Nan::TryCatch tc;
+    Nan::JSON NanJSON;
+    Nan::MaybeLocal<v8::Value> parse_value = NanJSON.Parse(string);
+    if (tc.HasCaught()) {
+      argv[1] = string;
+    } else {
+      if (parse_value.IsEmpty()) {
+        argv[1] = string;
+      } else {
+        argv[1] = parse_value.ToLocalChecked();
+      }
+    }
   }
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
                     Nan::New<v8::Function>(baton->callback),
@@ -198,7 +212,21 @@ void Database::CommandSyncString(
     return;
   }
 
-  info.GetReturnValue().Set(Nan::New(result, result_length).ToLocalChecked());
+
+  v8::Local<v8::String> string = Nan::New(result,
+                                          result_length).ToLocalChecked();
+  Nan::TryCatch tc;
+  Nan::JSON NanJSON;
+  Nan::MaybeLocal<v8::Value> parse_value = NanJSON.Parse(string);
+  if (tc.HasCaught()) {
+    info.GetReturnValue().Set(string);
+    return;
+  }
+  if (parse_value.IsEmpty()) {
+    info.GetReturnValue().Set(string);
+    return;
+  }
+  info.GetReturnValue().Set(parse_value.ToLocalChecked());
 }
 
 void InitNroonga(v8::Local<v8::Object> exports) {
