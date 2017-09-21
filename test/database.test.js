@@ -111,6 +111,24 @@ describe('database with data stored', () => {
   let db = null
   const tempdir = path.join('test', 'tmp')
   const databaseName = `tempdb-${process.pid}-${(new Date()).valueOf()}`
+  const expectedDump = `table_create Site TABLE_HASH_KEY ShortText
+column_create Site title COLUMN_SCALAR ShortText
+
+table_create Terms TABLE_PAT_KEY ShortText \
+--default_tokenizer TokenBigram --normalizer NormalizerAuto
+
+load --table Site
+[
+["_key","title"],
+["http://groonga.org/",\
+"groonga - An open-source fulltext search engine and column store"],
+["http://groonga.rubyforge.org/",\
+"Fulltext search by Ruby with groonga - Ranguba"],
+["http://mroonga.github.com/",\
+"Groonga storage engine - Fast fulltext search on MySQL"]
+]
+
+column_create Terms entry_title COLUMN_INDEX|WITH_POSITION Site title`
 
   beforeEach(() => {
     if (!fs.existsSync(tempdir)) fs.mkdirSync(tempdir)
@@ -152,58 +170,94 @@ describe('database with data stored', () => {
     fs.removeSync(tempdir)
   })
 
-  it('should select records', () => {
-    const matched = db.commandSync('select', {table: 'Site'})
-    expect(matched[0][0][0]).to.equal(3)
-  })
-
-  it('should select records ignoring the null valued option', () => {
-    const matched = db.commandSync('select', {
-      table: 'Site',
-      query: null
+  describe('#commandSync', () => {
+    it('should select records', () => {
+      const matched = db.commandSync('select', {table: 'Site'})
+      expect(matched[0][0][0]).to.equal(3)
     })
-    expect(matched[0][0][0]).to.equal(3)
-  })
 
-  it('should search by query', () => {
-    const matched = db.commandSync('select', {
-      table: 'Site',
-      match_columns: 'title',
-      query: 'ruby'
+    it('should select records ignoring the null valued option', () => {
+      const matched = db.commandSync('select', {
+        table: 'Site',
+        query: null
+      })
+      expect(matched[0][0][0]).to.equal(3)
     })
-    expect(matched[0][0][0]).to.equal(1)
-  })
 
-  it('should search by query including space', () => {
-    const matched = db.commandSync('select', {
-      table: 'Site',
-      match_columns: 'title',
-      query: 'search ranguba'
+    it('should search by query', () => {
+      const matched = db.commandSync('select', {
+        table: 'Site',
+        match_columns: 'title',
+        query: 'ruby'
+      })
+      expect(matched[0][0][0]).to.equal(1)
     })
-    expect(matched[0][0][0]).to.equal(1)
+
+    it('should search by query including space', () => {
+      const matched = db.commandSync('select', {
+        table: 'Site',
+        match_columns: 'title',
+        query: 'search ranguba'
+      })
+      expect(matched[0][0][0]).to.equal(1)
+    })
+
+    it('should dump all records', () => {
+      const result = db.commandSync('dump', {tables: 'Site'})
+      expect(result).to.equal(expectedDump)
+    })
   })
 
-  it('should dump all records', () => {
-    const expectedDump = `table_create Site TABLE_HASH_KEY ShortText
-column_create Site title COLUMN_SCALAR ShortText
+  describe('#command', () => {
+    it('should select records', done => {
+      db.command('select', {table: 'Site'}, (err, data) => {
+        expect(err).to.be.null
+        expect(data[0][0][0]).to.equal(3)
+        done()
+      })
+    })
 
-table_create Terms TABLE_PAT_KEY ShortText \
---default_tokenizer TokenBigram --normalizer NormalizerAuto
+    it('should select records ignoring the null valued option', done => {
+      db.command('select', {
+        table: 'Site',
+        query: null
+      }, (err, data) => {
+        expect(err).to.be.null
+        expect(data[0][0][0]).to.equal(3)
+        done()
+      })
+    })
 
-load --table Site
-[
-["_key","title"],
-["http://groonga.org/",\
-"groonga - An open-source fulltext search engine and column store"],
-["http://groonga.rubyforge.org/",\
-"Fulltext search by Ruby with groonga - Ranguba"],
-["http://mroonga.github.com/",\
-"Groonga storage engine - Fast fulltext search on MySQL"]
-]
+    it('should search by query', done => {
+      db.command('select', {
+        table: 'Site',
+        match_columns: 'title',
+        query: 'ruby'
+      }, (err, data) => {
+        expect(err).to.be.null
+        expect(data[0][0][0]).to.equal(1)
+        done()
+      })
+    })
 
-column_create Terms entry_title COLUMN_INDEX|WITH_POSITION Site title`
+    it('should search by query including space', done => {
+      db.command('select', {
+        table: 'Site',
+        match_columns: 'title',
+        query: 'search ranguba'
+      }, (err, data) => {
+        expect(err).to.be.null
+        expect(data[0][0][0]).to.equal(1)
+        done()
+      })
+    })
 
-    const result = db.commandSync('dump', {tables: 'Site'})
-    expect(result).to.equal(expectedDump)
+    it('should dump all records', done => {
+      db.command('dump', {tables: 'Site'}, (err, data) => {
+        expect(err).to.be.null
+        expect(data).to.equal(expectedDump)
+        done()
+      })
+    })
   })
 })
