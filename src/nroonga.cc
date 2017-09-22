@@ -4,6 +4,44 @@ namespace nroonga {
 
 Nan::Persistent<v8::Function> groonga_context_constructor;
 
+v8::Local<v8::String> Database::optionsToCommandString(
+    const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1 || !info[0]->IsString()) {
+    Nan::ThrowTypeError("Bad parameter");
+    return Nan::New("").ToLocalChecked();
+  }
+  if (info.Length() == 1) {
+    return info[0]->ToString();
+  }
+  if (info.Length() >= 2 && !info[1]->IsObject()) {
+    return info[0]->ToString();
+  }
+
+  v8::Local<v8::Object> options = info[1]->ToObject();
+  v8::Local<v8::Array> props =
+    Nan::GetOwnPropertyNames(options).ToLocalChecked();
+
+  v8::Local<v8::String> commandString = info[0]->ToString();
+  Nan::JSON NanJSON;
+  for (int i = 0, l = props->Length(); i < l; i++) {
+    v8::Local<v8::Value> key = props->Get(i);
+    v8::Local<v8::Value> value = Nan::Get(options, key).ToLocalChecked();
+    if (value->IsNull()) {
+      continue;
+    }
+
+    commandString = v8::String::Concat(commandString,
+                                       Nan::New(" --").ToLocalChecked());
+    commandString = v8::String::Concat(commandString, key->ToString());
+    commandString = v8::String::Concat(commandString,
+                                       Nan::New(" ").ToLocalChecked());
+    commandString = v8::String::Concat(
+        commandString,
+        NanJSON.Stringify(value->ToObject()).ToLocalChecked()->ToString());
+  }
+  return commandString;
+}
+
 void Database::Initialize(v8::Local<v8::Object> exports) {
   v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
 

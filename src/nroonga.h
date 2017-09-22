@@ -30,6 +30,8 @@ class Database : public Nan::ObjectWrap {
     static void CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info);
     static void CommandSyncString(const Nan::FunctionCallbackInfo<v8::Value>& info);
     static void Close(const Nan::FunctionCallbackInfo<v8::Value>& info);
+    static v8::Local<v8::String> optionsToCommandString(
+        const Nan::FunctionCallbackInfo<v8::Value>& info);
     Database() : ObjectWrap() {
     }
     bool Cleanup();
