@@ -10,6 +10,7 @@
     "database"
   ],
   "homepage": "http://nroonga.github.com/",
+  "license": "LGPL-2.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/nroonga/nroonga.git"
