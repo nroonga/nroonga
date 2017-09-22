@@ -208,7 +208,6 @@ void Database::CommandSyncString(
     return;
   }
 
-
   v8::Local<v8::String> string = Nan::New(result,
                                           result_length).ToLocalChecked();
   Nan::TryCatch tc;
