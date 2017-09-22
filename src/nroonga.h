@@ -11,7 +11,7 @@ class Database : public Nan::ObjectWrap {
   bool closed;
 
   public:
-    static void Initialize(v8::Handle<v8::Object> target);
+    static void Initialize(v8::Local<v8::Object> exports);
 
     struct Baton {
       uv_work_t request;
