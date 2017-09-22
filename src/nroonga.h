@@ -11,7 +11,7 @@ class Database : public Nan::ObjectWrap {
   bool closed;
 
   public:
-    static void Initialize(v8::Handle<v8::Object> target);
+    static void Initialize(v8::Local<v8::Object> exports);
 
     struct Baton {
       uv_work_t request;
@@ -25,7 +25,7 @@ class Database : public Nan::ObjectWrap {
       grn_obj *database;
     };
 
-  protected:
+  private:
     static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
     static void CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info);
     static void CommandSyncString(const Nan::FunctionCallbackInfo<v8::Value>& info);
