@@ -48,8 +48,8 @@ void Database::Initialize(v8::Local<v8::Object> exports) {
   tpl->SetClassName(Nan::New("Database").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-  Nan::SetPrototypeMethod(tpl, "commandString", Database::CommandString);
-  Nan::SetPrototypeMethod(tpl, "commandSyncString", Database::CommandSyncString);
+  Nan::SetPrototypeMethod(tpl, "command", Database::Command);
+  Nan::SetPrototypeMethod(tpl, "commandSync", Database::CommandSync);
   Nan::SetPrototypeMethod(tpl, "close", Database::Close);
 
   groonga_context_constructor.Reset(tpl->GetFunction());
@@ -174,7 +174,7 @@ void Database::CommandAfter(uv_work_t* req) {
   delete baton;
 }
 
-void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void Database::Command(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
@@ -223,8 +223,7 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
-void Database::CommandSyncString(
-    const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void Database::CommandSync(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
