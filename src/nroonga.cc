@@ -182,12 +182,24 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   v8::Local<v8::Function> callback;
-  if (info.Length() >= 2) {
+  if (info.Length() == 2) {
     if (!info[1]->IsFunction()) {
       Nan::ThrowTypeError("Second argument must be a callback function");
       return;
     }
     callback = info[1].As<v8::Function>();
+  } else if (info.Length() == 3) {
+    if (info[1]->IsFunction()) {
+      callback = info[1].As<v8::Function>();
+    } else if (info[2]->IsFunction()) {
+      callback = info[2].As<v8::Function>();
+    } else {
+      Nan::ThrowTypeError("Second or Third argument must be a callback function");
+      return;
+    }
+  } else {
+    Nan::ThrowTypeError("Bad parameter");
+    return;
   }
 
   if (db->closed) {
@@ -199,7 +211,7 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   baton->request.data = baton;
   baton->callback.Reset(callback);
 
-  v8::String::Utf8Value command(info[0]->ToString());
+  v8::String::Utf8Value command(optionsToCommandString(info));
   baton->database = db->database;
 
   baton->command = std::string(*command, command.length());
@@ -224,7 +236,7 @@ void Database::CommandSyncString(
   char *result;
   unsigned int result_length;
   int flags;
-  v8::String::Utf8Value command(info[0]->ToString());
+  v8::String::Utf8Value command(optionsToCommandString(info));
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
