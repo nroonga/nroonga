@@ -8,11 +8,10 @@ You can write your custom full-text search backend on the top of [node.js](http:
 
 ### Requirements:
 
-* [groonga][] built with [MessagePack][] support
+* [groonga][]
 * [pkg-config][]
 
   [groonga]:http://groonga.org
-  [MessagePack]:http://msgpack.org/
   [pkg-config]:http://www.freedesktop.org/wiki/Software/pkg-config
 
 #### For debian and ubuntu users
