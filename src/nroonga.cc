@@ -4,14 +4,52 @@ namespace nroonga {
 
 Nan::Persistent<v8::Function> groonga_context_constructor;
 
+v8::Local<v8::String> Database::optionsToCommandString(
+    const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1 || !info[0]->IsString()) {
+    Nan::ThrowTypeError("Bad parameter");
+    return Nan::New("").ToLocalChecked();
+  }
+  if (info.Length() == 1) {
+    return info[0]->ToString();
+  }
+  if (info.Length() >= 2 && !info[1]->IsObject()) {
+    return info[0]->ToString();
+  }
+
+  v8::Local<v8::Object> options = info[1]->ToObject();
+  v8::Local<v8::Array> props =
+    Nan::GetOwnPropertyNames(options).ToLocalChecked();
+
+  v8::Local<v8::String> commandString = info[0]->ToString();
+  Nan::JSON NanJSON;
+  for (int i = 0, l = props->Length(); i < l; i++) {
+    v8::Local<v8::Value> key = props->Get(i);
+    v8::Local<v8::Value> value = Nan::Get(options, key).ToLocalChecked();
+    if (value->IsNull()) {
+      continue;
+    }
+
+    commandString = v8::String::Concat(commandString,
+                                       Nan::New(" --").ToLocalChecked());
+    commandString = v8::String::Concat(commandString, key->ToString());
+    commandString = v8::String::Concat(commandString,
+                                       Nan::New(" ").ToLocalChecked());
+    commandString = v8::String::Concat(
+        commandString,
+        NanJSON.Stringify(value->ToObject()).ToLocalChecked()->ToString());
+  }
+  return commandString;
+}
+
 void Database::Initialize(v8::Local<v8::Object> exports) {
   v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
 
   tpl->SetClassName(Nan::New("Database").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-  Nan::SetPrototypeMethod(tpl, "commandString", Database::CommandString);
-  Nan::SetPrototypeMethod(tpl, "commandSyncString", Database::CommandSyncString);
+  Nan::SetPrototypeMethod(tpl, "command", Database::Command);
+  Nan::SetPrototypeMethod(tpl, "commandSync", Database::CommandSync);
   Nan::SetPrototypeMethod(tpl, "close", Database::Close);
 
   groonga_context_constructor.Reset(tpl->GetFunction());
@@ -136,7 +174,7 @@ void Database::CommandAfter(uv_work_t* req) {
   delete baton;
 }
 
-void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void Database::Command(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
@@ -144,12 +182,24 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   v8::Local<v8::Function> callback;
-  if (info.Length() >= 2) {
+  if (info.Length() == 2) {
     if (!info[1]->IsFunction()) {
       Nan::ThrowTypeError("Second argument must be a callback function");
       return;
     }
     callback = info[1].As<v8::Function>();
+  } else if (info.Length() == 3) {
+    if (info[1]->IsFunction()) {
+      callback = info[1].As<v8::Function>();
+    } else if (info[2]->IsFunction()) {
+      callback = info[2].As<v8::Function>();
+    } else {
+      Nan::ThrowTypeError("Second or Third argument must be a callback function");
+      return;
+    }
+  } else {
+    Nan::ThrowTypeError("Bad parameter");
+    return;
   }
 
   if (db->closed) {
@@ -161,7 +211,7 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   baton->request.data = baton;
   baton->callback.Reset(callback);
 
-  v8::String::Utf8Value command(info[0]->ToString());
+  v8::String::Utf8Value command(optionsToCommandString(info));
   baton->database = db->database;
 
   baton->command = std::string(*command, command.length());
@@ -173,8 +223,7 @@ void Database::CommandString(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   info.GetReturnValue().Set(Nan::Undefined());
 }
 
-void Database::CommandSyncString(
-    const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void Database::CommandSync(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Database *db = ObjectWrap::Unwrap<Database>(info.Holder());
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
@@ -186,7 +235,7 @@ void Database::CommandSyncString(
   char *result;
   unsigned int result_length;
   int flags;
-  v8::String::Utf8Value command(info[0]->ToString());
+  v8::String::Utf8Value command(optionsToCommandString(info));
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
