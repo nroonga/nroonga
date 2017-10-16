@@ -27,6 +27,17 @@
   "dependencies": {
     "nan": "^2.7.0"
   },
+  "files": [
+    "README.md",
+    "binding.gyp",
+    "examples",
+    "lib/nroonga.js",
+    "license",
+    "npm-shrinkwrap.json",
+    "package.json",
+    "src",
+    "test"
+  ],
   "scripts": {
     "install": "node-gyp rebuild",
     "lint": "standard",
