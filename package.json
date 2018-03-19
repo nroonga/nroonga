@@ -20,12 +20,12 @@
   },
   "devDependencies": {
     "chai": "",
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^4.0.3",
     "mocha": "",
     "standard": "^10.0.3"
   },
   "dependencies": {
-    "nan": "^2.8.0"
+    "nan": "^2.10.0"
   },
   "files": [
     "README.md",
