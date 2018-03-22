@@ -167,9 +167,9 @@ void Database::CommandAfter(uv_work_t* req) {
       argv[1] = parse_value.ToLocalChecked();
     }
   }
-  Nan::MakeCallback(Nan::GetCurrentContext()->Global(),
-                    Nan::New<v8::Function>(baton->callback),
-                    argc, argv);
+  baton->runInAsyncScope(Nan::GetCurrentContext()->Global(),
+                         Nan::New<v8::Function>(baton->callback),
+                         argc, argv);
   grn_ctx_fin(&baton->context);
   delete baton;
 }

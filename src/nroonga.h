@@ -13,16 +13,20 @@ class Database : public Nan::ObjectWrap {
   public:
     static void Initialize(v8::Local<v8::Object> exports);
 
-    struct Baton {
-      uv_work_t request;
-      Nan::Persistent<v8::Function> callback;
-      int error;
-      char *result;
-      unsigned int result_length;
+    class Baton : public Nan::AsyncResource {
+      public:
+        Baton() : AsyncResource("nroonga::Database::Baton") {
+        };
 
-      std::string command;
-      grn_ctx context;
-      grn_obj *database;
+        uv_work_t request;
+        Nan::Persistent<v8::Function> callback;
+        int error;
+        char *result;
+        unsigned int result_length;
+
+        std::string command;
+        grn_ctx context;
+        grn_obj *database;
     };
 
   private:
