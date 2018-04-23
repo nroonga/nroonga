@@ -22,7 +22,7 @@
     "chai": "",
     "fs-extra": "^4.0.3",
     "mocha": "",
-    "standard": "^10.0.3"
+    "standard": "^11.0.1"
   },
   "dependencies": {
     "nan": "^2.10.0"
