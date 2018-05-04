@@ -70,7 +70,7 @@ void Database::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   if (info[0]->IsUndefined()) {
     db->database = grn_db_create(ctx, NULL, NULL);
   } else if (info[0]->IsString()) {
-    v8::String::Utf8Value path(info[0]->ToString());
+    Nan::Utf8String path(info[0]->ToString());
     if (info.Length() > 1 && info[1]->IsTrue()) {
       db->database = grn_db_open(ctx, *path);
     } else {
@@ -211,7 +211,7 @@ void Database::Command(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   baton->request.data = baton;
   baton->callback.Reset(callback);
 
-  v8::String::Utf8Value command(optionsToCommandString(info));
+  Nan::Utf8String command(optionsToCommandString(info));
   baton->database = db->database;
 
   baton->command = std::string(*command, command.length());
@@ -235,7 +235,7 @@ void Database::CommandSync(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   char *result;
   unsigned int result_length;
   int flags;
-  v8::String::Utf8Value command(optionsToCommandString(info));
+  Nan::Utf8String command(optionsToCommandString(info));
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
