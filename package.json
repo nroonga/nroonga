@@ -22,10 +22,10 @@
     "chai": "",
     "fs-extra": "",
     "mocha": "",
-    "standard": "^11.0.1"
+    "standard": "^12.0.1"
   },
   "dependencies": {
-    "nan": "^2.10.0"
+    "nan": "^2.11.0"
   },
   "files": [
     "README.md",
