@@ -172,7 +172,7 @@ column_create Terms entry_title COLUMN_INDEX|WITH_POSITION Site title`
 
   describe('#commandSync', () => {
     it('should select records', () => {
-      const matched = db.commandSync('select', {table: 'Site'})
+      const matched = db.commandSync('select', { table: 'Site' })
       expect(matched[0][0][0]).to.equal(3)
     })
 
@@ -203,14 +203,14 @@ column_create Terms entry_title COLUMN_INDEX|WITH_POSITION Site title`
     })
 
     it('should dump all records', () => {
-      const result = db.commandSync('dump', {tables: 'Site'})
+      const result = db.commandSync('dump', { tables: 'Site' })
       expect(result).to.equal(expectedDump)
     })
   })
 
   describe('#command', () => {
     it('should select records', done => {
-      db.command('select', {table: 'Site'}, (err, data) => {
+      db.command('select', { table: 'Site' }, (err, data) => {
         expect(err).to.be.null
         expect(data[0][0][0]).to.equal(3)
         done()
@@ -253,7 +253,7 @@ column_create Terms entry_title COLUMN_INDEX|WITH_POSITION Site title`
     })
 
     it('should dump all records', done => {
-      db.command('dump', {tables: 'Site'}, (err, data) => {
+      db.command('dump', { tables: 'Site' }, (err, data) => {
         expect(err).to.be.null
         expect(data).to.equal(expectedDump)
         done()
