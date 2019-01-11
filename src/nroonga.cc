@@ -11,17 +11,17 @@ v8::Local<v8::String> Database::optionsToCommandString(
     return Nan::New("").ToLocalChecked();
   }
   if (info.Length() == 1) {
-    return info[0]->ToString();
+    return info[0].As<v8::String>();
   }
   if (info.Length() >= 2 && !info[1]->IsObject()) {
-    return info[0]->ToString();
+    return info[0].As<v8::String>();
   }
 
-  v8::Local<v8::Object> options = info[1]->ToObject();
+  v8::Local<v8::Object> options = info[1].As<v8::Object>();
   v8::Local<v8::Array> props =
     Nan::GetOwnPropertyNames(options).ToLocalChecked();
 
-  v8::Local<v8::String> commandString = info[0]->ToString();
+  v8::Local<v8::String> commandString = info[0].As<v8::String>();
   Nan::JSON NanJSON;
   for (int i = 0, l = props->Length(); i < l; i++) {
     v8::Local<v8::Value> key = props->Get(i);
@@ -32,12 +32,13 @@ v8::Local<v8::String> Database::optionsToCommandString(
 
     commandString = v8::String::Concat(commandString,
                                        Nan::New(" --").ToLocalChecked());
-    commandString = v8::String::Concat(commandString, key->ToString());
+    commandString = v8::String::Concat(commandString, key.As<v8::String>());
     commandString = v8::String::Concat(commandString,
                                        Nan::New(" ").ToLocalChecked());
     commandString = v8::String::Concat(
         commandString,
-        NanJSON.Stringify(value->ToObject()).ToLocalChecked()->ToString());
+        NanJSON.Stringify(
+            value.As<v8::Object>()).ToLocalChecked().As<v8::String>());
   }
   return commandString;
 }
@@ -70,7 +71,7 @@ void Database::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   if (info[0]->IsUndefined()) {
     db->database = grn_db_create(ctx, NULL, NULL);
   } else if (info[0]->IsString()) {
-    Nan::Utf8String path(info[0]->ToString());
+    Nan::Utf8String path(info[0].As<v8::String>());
     if (info.Length() > 1 && info[1]->IsTrue()) {
       db->database = grn_db_open(ctx, *path);
     } else {
