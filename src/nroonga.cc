@@ -4,7 +4,7 @@ namespace nroonga {
 
 Nan::Persistent<v8::Function> groonga_context_constructor;
 
-v8::Local<v8::String> Database::optionsToCommandString(
+v8::Local<v8::String> Database::OptionsToCommandString(
     const Nan::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
@@ -212,7 +212,7 @@ void Database::Command(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   baton->request.data = baton;
   baton->callback.Reset(callback);
 
-  Nan::Utf8String command(optionsToCommandString(info));
+  Nan::Utf8String command(OptionsToCommandString(info));
   baton->database = db->database;
 
   baton->command = std::string(*command, command.length());
@@ -236,7 +236,7 @@ void Database::CommandSync(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   char *result;
   unsigned int result_length;
   int flags;
-  Nan::Utf8String command(optionsToCommandString(info));
+  Nan::Utf8String command(OptionsToCommandString(info));
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
