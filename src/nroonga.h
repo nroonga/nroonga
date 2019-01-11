@@ -34,6 +34,8 @@ class Database : public Nan::ObjectWrap {
     static void Command(const Nan::FunctionCallbackInfo<v8::Value>& info);
     static void CommandSync(const Nan::FunctionCallbackInfo<v8::Value>& info);
     static void Close(const Nan::FunctionCallbackInfo<v8::Value>& info);
+    static v8::Local<v8::String> Concat(
+        v8::Local<v8::String> left, v8::Local<v8::String> right);
     static v8::Local<v8::String> OptionsToCommandString(
         const Nan::FunctionCallbackInfo<v8::Value>& info);
     Database() : ObjectWrap() {
