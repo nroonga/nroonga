@@ -4,7 +4,16 @@ namespace nroonga {
 
 Nan::Persistent<v8::Function> groonga_context_constructor;
 
-v8::Local<v8::String> Database::optionsToCommandString(
+v8::Local<v8::String> Database::Concat(
+    v8::Local<v8::String> left, v8::Local<v8::String> right) {
+#if NODE_MAJOR_VERSION >= 10
+  return v8::String::Concat(v8::Isolate::GetCurrent(), left, right);
+#else
+  return v8::String::Concat(left, right);
+#endif
+}
+
+v8::Local<v8::String> Database::OptionsToCommandString(
     const Nan::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1 || !info[0]->IsString()) {
     Nan::ThrowTypeError("Bad parameter");
@@ -30,12 +39,10 @@ v8::Local<v8::String> Database::optionsToCommandString(
       continue;
     }
 
-    commandString = v8::String::Concat(commandString,
-                                       Nan::New(" --").ToLocalChecked());
-    commandString = v8::String::Concat(commandString, key.As<v8::String>());
-    commandString = v8::String::Concat(commandString,
-                                       Nan::New(" ").ToLocalChecked());
-    commandString = v8::String::Concat(
+    commandString = Concat(commandString, Nan::New(" --").ToLocalChecked());
+    commandString = Concat(commandString, key.As<v8::String>());
+    commandString = Concat(commandString, Nan::New(" ").ToLocalChecked());
+    commandString = Concat(
         commandString,
         NanJSON.Stringify(
             value.As<v8::Object>()).ToLocalChecked().As<v8::String>());
@@ -212,7 +219,7 @@ void Database::Command(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   baton->request.data = baton;
   baton->callback.Reset(callback);
 
-  Nan::Utf8String command(optionsToCommandString(info));
+  Nan::Utf8String command(OptionsToCommandString(info));
   baton->database = db->database;
 
   baton->command = std::string(*command, command.length());
@@ -236,7 +243,7 @@ void Database::CommandSync(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   char *result;
   unsigned int result_length;
   int flags;
-  Nan::Utf8String command(optionsToCommandString(info));
+  Nan::Utf8String command(OptionsToCommandString(info));
 
   if (db->closed) {
     Nan::ThrowTypeError("Database already closed");
