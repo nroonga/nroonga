@@ -33,7 +33,7 @@ v8::Local<v8::String> Database::OptionsToCommandString(
   v8::Local<v8::String> commandString = info[0].As<v8::String>();
   Nan::JSON NanJSON;
   for (int i = 0, l = props->Length(); i < l; i++) {
-    v8::Local<v8::Value> key = props->Get(i);
+    v8::Local<v8::Value> key = Nan::Get(props, i).ToLocalChecked();
     v8::Local<v8::Value> value = Nan::Get(options, key).ToLocalChecked();
     if (value->IsNull()) {
       continue;
@@ -60,9 +60,11 @@ void Database::Initialize(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "commandSync", Database::CommandSync);
   Nan::SetPrototypeMethod(tpl, "close", Database::Close);
 
-  groonga_context_constructor.Reset(tpl->GetFunction());
-  exports->Set(Nan::New("Database").ToLocalChecked(),
-               tpl->GetFunction());
+  v8::Local<v8::Context> context = Nan::GetCurrentContext();
+  groonga_context_constructor.Reset(tpl->GetFunction(context).ToLocalChecked());
+  (void)exports->Set(context,
+                     Nan::New("Database").ToLocalChecked(),
+                     tpl->GetFunction(context).ToLocalChecked());
 }
 
 void Database::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -156,7 +158,7 @@ void Database::CommandAfter(uv_work_t* req) {
 
   Baton* baton = static_cast<Baton*>(req->data);
   const unsigned argc = 2;
-  v8::Handle<v8::Value> argv[argc];
+  v8::Local<v8::Value> argv[argc];
   if (baton->error) {
     argv[0] = v8::Exception::Error(
         Nan::New(baton->context.errbuf).ToLocalChecked());
