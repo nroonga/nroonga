@@ -1,0 +1,43 @@
+image: Visual Studio 2017
+
+environment:
+  matrix:
+    - nodejs_version: '11' # 12 is not ready on AppVeyor
+    - nodejs_version: '10'
+    - nodejs_version: '8'
+    - nodejs_version: '6'
+
+platform:
+  - x64
+  - x86
+
+install:
+  # setup groonga archive at c:/projects/groonga
+  - choco install -y curl 7zip.commandline
+  - cd %APPVEYOR_BUILD_FOLDER%/..
+  - set ARCHIVE=groonga-latest-%PLATFORM%-vs2017.zip
+  - curl -O https://packages.groonga.org/windows/groonga/%ARCHIVE%
+  - 7z x %ARCHIVE%
+  - del %ARCHIVE%
+  - move groonga-* groonga
+  # setup node
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - ps: Install-Product node $Env:NODEJS_VERSION $Env:PLATFORM
+  - npm install --global npm@latest
+  - set PATH=%APPDATA%\npm;%PATH%
+  - npm config set msvs_version 2017
+  - npm install --global node-gyp
+  - node --version
+  - npm --version
+  - set GROONGA_PATH=%APPVEYOR_BUILD_FOLDER%\..\groonga
+  - npm install
+
+build: off
+
+test_script:
+  - node --version
+  - npm --version
+  - npm test
+
+#on_failure:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
