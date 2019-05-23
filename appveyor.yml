@@ -1,6 +1,6 @@
 notifications:
-  webhooks:
-    - https://webhook.commit-email.info/
+  - provider: Webhook
+    url: https://webhook.commit-email.info/
 
 image: Visual Studio 2017
 
