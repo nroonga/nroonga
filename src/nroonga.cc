@@ -62,9 +62,9 @@ void Database::Initialize(v8::Local<v8::Object> exports) {
 
   v8::Local<v8::Context> context = Nan::GetCurrentContext();
   groonga_context_constructor.Reset(tpl->GetFunction(context).ToLocalChecked());
-  (void)exports->Set(context,
-                     Nan::New("Database").ToLocalChecked(),
-                     tpl->GetFunction(context).ToLocalChecked());
+  Nan::Set(exports,
+          Nan::New("Database").ToLocalChecked(),
+          tpl->GetFunction(context).ToLocalChecked());
 }
 
 void Database::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
