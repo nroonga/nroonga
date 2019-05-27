@@ -17,3 +17,4 @@ addons:
       - g++-4.8
 before_install:
  - curl --silent --location https://github.com/groonga/groonga/raw/master/data/travis/setup.sh | sh
+ - sudo apt-get install -qq -y groonga-normalizer-mysql groonga-tokenizer-mecab
