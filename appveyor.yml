@@ -19,8 +19,12 @@ install:
   # setup groonga archive at c:/projects/groonga
   - choco install -y curl 7zip.commandline
   - cd %APPVEYOR_BUILD_FOLDER%/..
-  - set ARCHIVE=groonga-latest-%PLATFORM%-vs2017.zip
-  - curl -O https://packages.groonga.org/windows/groonga/%ARCHIVE%
+  # Enable after Groonga 9.0.3 has been released.
+  #- set ARCHIVE=groonga-latest-%PLATFORM%-vs2017.zip
+  #- curl -O https://packages.groonga.org/windows/groonga/%ARCHIVE%
+  # Use master to test fixed \\?\ expanded path prefix issue.
+  - set ARCHIVE=groonga-9.0.3-65dc3cd-%Platform%.zip
+  - curl -O https://packages.groonga.org/tmp/%ARCHIVE%
   - 7z x %ARCHIVE%
   - del %ARCHIVE%
   - move groonga-* groonga
@@ -41,6 +45,13 @@ build: off
 test_script:
   - node --version
   - npm --version
+  # Test with GROONGA_PATH
+  - npm test
+  # Test without GROONGA_PATH
+  # Reproduce extended path prefix \\?\ test case (failed to load Groonga plugin)
+  - set GROONGA_PATH=
+  - xcopy /Q /E /I /Y %APPVEYOR_BUILD_FOLDER%\..\groonga\* build\Release\
+  - xcopy /Q /E /I /Y build\Release\bin\* build\Release\
   - npm test
 
 #on_failure:
