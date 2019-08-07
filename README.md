@@ -37,6 +37,12 @@ After groonga installed, just do
     % npm install
     % npm test
 
+You may need to install a plugin to run the test.
+
+For Ubuntu:
+
+    % sudo apt-get install -qq -y groonga-normalizer-mysql groonga-tokenizer-mecab
+
 ### To run examples:
 
 Super simple test script:
@@ -50,14 +56,14 @@ A CLI example (like groonga stand-alone mode):
 ### Examples
 
 ```javascript
-var nroonga = require('nroonga');
-var db = new nroonga.Database('database');
+const nroonga = require('nroonga');
+const db = new nroonga.Database('database');
 
 // Synchronous
 console.log(db.commandSync('status'));
 
 // Asynchronous
-db.command('status', function(error, data) {
+db.command('status', (error, data) => {
   console.log(data);
 });
 ```
