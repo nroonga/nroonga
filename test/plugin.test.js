@@ -27,7 +27,7 @@ describe('plugin', () => {
   describe('Normalizer MySQL', () => {
     it('should normalize haha', () => {
       const matched = db.commandSync('normalize NormalizerMySQLUnicode900 "はハ"')
-      const expected = { 'normalized': 'はは', 'types': [], 'checks': [] }
+      const expected = { normalized: 'はは', types: [], checks: [] }
       expect(matched).to.deep.equal(expected)
     })
   })
@@ -35,7 +35,7 @@ describe('plugin', () => {
   describe('Ruby', () => {
     it('should evaluate ruby script', () => {
       const matched = db.commandSync('ruby_eval "1 + 2"')
-      const expected = { 'value': 3 }
+      const expected = { value: 3 }
       expect(matched).to.deep.equal(expected)
     })
   })
