@@ -34,10 +34,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install Groonga
       run: |
-        set ARCHIVE=groonga-9.0.3-65dc3cd-x64.zip
+        set RELEASE_VERSION=9.0.8
+        set ARCHIVE=groonga-%RELEASE_VERSION%-x64-vs2017.zip
 
         choco install -y curl 7zip.commandline
-        curl -O https://packages.groonga.org/tmp/%ARCHIVE%
+        curl -OL https://github.com/groonga/groonga/releases/download/v%RELEASE_VERSION%/%ARCHIVE%
         7z x %ARCHIVE%
         del %ARCHIVE%
         move groonga-* ..\groonga
