@@ -1,0 +1,72 @@
+name: Node CI
+on: [push, pull_request]
+jobs:
+  ubuntu-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@master
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install Groonga
+      run: |
+        curl --silent --location https://github.com/groonga/groonga/raw/master/data/travis/setup.sh | sh
+        sudo apt-get install -qq -y groonga-normalizer-mysql groonga-tokenizer-mecab
+    - name: npm install and test
+      run: |
+        npm install
+        npm test
+
+  windows-test:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@master
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install Groonga
+      run: |
+        set RELEASE_VERSION=9.0.8
+        set ARCHIVE=groonga-%RELEASE_VERSION%-x64-vs2017.zip
+
+        choco install -y curl 7zip.commandline
+        curl -OL https://github.com/groonga/groonga/releases/download/v%RELEASE_VERSION%/%ARCHIVE%
+        7z x %ARCHIVE%
+        del %ARCHIVE%
+        move groonga-* ..\groonga
+    - run: npm i -g npm
+    - run: npm config set msvs_version 2019
+    - run: npm i -g node-gyp
+    - run: |
+        set GROONGA_PATH=%GITHUB_WORKSPACE%\..\groonga
+        npm install
+    - run: |
+        set GROONGA_PATH=%GITHUB_WORKSPACE%\..\groonga
+        npm test
+
+  macos-test:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@master
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: brew install groonga pkg-config
+    - name: npm install and test
+      run: |
+        npm install
+        npm test
+      env:
+        PKG_CONFIG_PATH: /usr/local/opt/groonga/lib/pkgconfig
