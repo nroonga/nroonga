@@ -4,6 +4,7 @@ jobs:
   ubuntu-test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [8.x, 10.x, 12.x, 13.x]
     steps:
@@ -24,6 +25,7 @@ jobs:
   windows-test:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [8.x, 10.x, 12.x, 13.x]
     steps:
@@ -55,6 +57,7 @@ jobs:
   macos-test:
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [8.x, 10.x, 12.x, 13.x]
     steps:
