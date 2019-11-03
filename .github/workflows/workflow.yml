@@ -35,6 +35,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Install Groonga
+      shell: cmd
       run: |
         set RELEASE_VERSION=9.0.8
         set ARCHIVE=groonga-%RELEASE_VERSION%-x64-vs2017.zip
@@ -47,10 +48,14 @@ jobs:
     - run: npm i -g npm
     - run: npm config set msvs_version 2019
     - run: npm i -g node-gyp
-    - run: |
+    - name: Install Nroonga
+      shell: cmd
+      run: |
         set GROONGA_PATH=%GITHUB_WORKSPACE%\..\groonga
         npm install
-    - run: |
+    - name: Run test
+      shell: cmd
+      run: |
         set GROONGA_PATH=%GITHUB_WORKSPACE%\..\groonga
         npm test
 
