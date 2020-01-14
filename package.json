@@ -35,7 +35,8 @@
     "license",
     "package.json",
     "src",
-    "test"
+    "test",
+    "types/nroonga.d.ts"
   ],
   "scripts": {
     "install": "node-gyp rebuild",
@@ -44,6 +45,7 @@
     "unit": "mocha --reporter list"
   },
   "main": "./lib/nroonga",
+  "types": "./types/nroonga.d.ts",
   "engines": {
     "node": ">= 6.0.0"
   }
