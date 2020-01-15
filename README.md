@@ -76,7 +76,7 @@ If [path] is given, create a persistent db. Otherwise, create a temporary db.
 
 If [openOnly] is set to `true`, do not attempt to create even if open failed. Otherwise, try to create a new database.
 
-### database.commandSync(command)
+### database.commandSync(command, [options])
 
 Send `command` to groonga. Block until results returned.
 
