@@ -1,7 +1,7 @@
 {
   "name": "nroonga",
   "description": "A library for building groonga powered nodes",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "author": "Yoji Shidara <dara@shidara.net>",
   "keywords": [
     "groonga",
