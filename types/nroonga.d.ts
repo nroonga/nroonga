@@ -1,6 +1,6 @@
 declare namespace nroonga {
   interface CallbackType {
-    (error: Error, data: any) => void
+    (error: Error, data: any): void
   }
 
   class Database {
