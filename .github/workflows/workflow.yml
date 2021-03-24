@@ -37,7 +37,7 @@ jobs:
     - name: Install Groonga
       shell: cmd
       run: |
-        set RELEASE_VERSION=9.0.8
+        set RELEASE_VERSION=11.0.0
         set ARCHIVE=groonga-%RELEASE_VERSION%-x64-vs2017.zip
 
         choco install -y curl 7zip.commandline
