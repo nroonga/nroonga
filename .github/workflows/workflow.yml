@@ -37,11 +37,10 @@ jobs:
     - name: Install Groonga
       shell: cmd
       run: |
-        set RELEASE_VERSION=9.0.8
-        set ARCHIVE=groonga-%RELEASE_VERSION%-x64-vs2017.zip
+        set ARCHIVE=groonga-latest-x64-vs2019.zip
 
         choco install -y curl 7zip.commandline
-        curl -OL https://github.com/groonga/groonga/releases/download/v%RELEASE_VERSION%/%ARCHIVE%
+        curl -OL https://packages.groonga.org/windows/groonga/%ARCHIVE%
         7z x %ARCHIVE%
         del %ARCHIVE%
         move groonga-* ..\groonga
