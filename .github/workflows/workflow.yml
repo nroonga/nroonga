@@ -23,7 +23,7 @@ jobs:
         npm test
 
   windows-test:
-    runs-on: windows-latest
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -45,7 +45,7 @@ jobs:
         del %ARCHIVE%
         move groonga-* ..\groonga
     - run: npm i -g npm
-    - run: npm config set msvs_version 2019
+    - run: npm config set msvs_version 2022
     - run: npm i -g node-gyp
     - name: Install Nroonga
       shell: cmd
