@@ -15,8 +15,6 @@ describe('plugin', () => {
   beforeEach(() => {
     if (!fs.existsSync(tempdir)) fs.mkdirSync(tempdir)
     db = new nroonga.Database(path.join(tempdir, databaseName))
-    db.commandSync('plugin_register normalizers/mysql')
-    db.commandSync('plugin_register ruby/eval')
   })
 
   afterEach(() => {
@@ -25,6 +23,10 @@ describe('plugin', () => {
   })
 
   describe('Normalizer MySQL', () => {
+    beforeEach(() => {
+      db.commandSync('plugin_register normalizers/mysql')
+    })
+
     it('should normalize haha', () => {
       const matched = db.commandSync('normalize NormalizerMySQLUnicode900 "はハ"')
       const expected = { normalized: 'はは', types: [], checks: [] }
@@ -33,6 +35,15 @@ describe('plugin', () => {
   })
 
   describe('Ruby', () => {
+    beforeEach(function () {
+      if (process.platform === 'darwin') {
+        // Ruby plugin is not included on Mac.
+        // https://github.com/Homebrew/homebrew-core/pull/126947
+        this.skip()
+      }
+      db.commandSync('plugin_register ruby/eval')
+    })
+
     it('should evaluate ruby script', () => {
       const matched = db.commandSync('ruby_eval "1 + 2"')
       const expected = { value: 3 }
