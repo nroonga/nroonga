@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [16.x, 18.x, 20.x]
     steps:
     - uses: actions/checkout@master
     - name: Use Node.js ${{ matrix.node-version }}
@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [16.x, 18.x, 20.x]
     steps:
     - uses: actions/checkout@master
     - name: Use Node.js ${{ matrix.node-version }}
@@ -62,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [16.x, 18.x, 20.x]
     steps:
     - uses: actions/checkout@master
     - name: Use Node.js ${{ matrix.node-version }}
