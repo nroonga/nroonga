@@ -44,7 +44,6 @@ jobs:
         7z x %ARCHIVE%
         del %ARCHIVE%
         move groonga-* ..\groonga
-    - run: npm i -g npm
     - run: npm i -g node-gyp
     - name: Install Nroonga
       shell: cmd
