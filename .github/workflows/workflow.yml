@@ -69,6 +69,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: brew install groonga pkg-config
+    - run: pip install setuptools
     - name: npm install and test
       run: |
         npm ci
