@@ -1,10 +1,10 @@
 /* eslint no-unused-expressions: 0 */
 'use strict'
 
-const fs = require('fs-extra')
-const path = require('path')
-const expect = require('chai').expect
-const nroonga = require('../lib/nroonga')
+import fs from 'fs-extra'
+import path from 'path'
+import { expect } from 'chai'
+import nroonga from '../lib/nroonga.js'
 
 /* global beforeEach, afterEach, describe, it */
 describe('plugin', () => {
