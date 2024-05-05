@@ -18,6 +18,7 @@
           "libraries": ["<!@(pkg-config --libs-only-l groonga)"],
         }],
         ['OS=="win"', {
+          "defines": ["NOMINMAX"],
           "include_dirs": [
             "<!(echo %GROONGA_PATH%)/include",
             "<!(echo %GROONGA_PATH%)/include/groonga",
