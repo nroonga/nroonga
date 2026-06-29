@@ -37,14 +37,14 @@ jobs:
     - name: Install Groonga
       shell: cmd
       run: |
-        set ARCHIVE=groonga-latest-x64-vs2019.zip
+        set ARCHIVE=groonga-latest-x64-vs2022.zip
 
         choco install -y curl 7zip.commandline
         curl -OL https://packages.groonga.org/windows/groonga/%ARCHIVE%
         7z x %ARCHIVE%
         del %ARCHIVE%
         move groonga-* ..\groonga
-    - run: npm i -g node-gyp
+    - run: npm i -g npm node-gyp
     - name: Install Nroonga
       shell: cmd
       run: |
